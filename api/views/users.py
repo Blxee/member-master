@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, jsonify
 
 
 users_routes = Blueprint('users', __name__, url_prefix='/api/users')
@@ -6,7 +6,9 @@ users_routes = Blueprint('users', __name__, url_prefix='/api/users')
 
 @users_routes.route('/sign-up', methods=['POST'], strict_slashes=False)
 def sign_up():
-    return 'signed up successfully'
+    res = jsonify()
+    res.set_cookie('auth-token', '')
+    return res
 
 
 @users_routes.route('/sign-in', methods=['POST'], strict_slashes=False)

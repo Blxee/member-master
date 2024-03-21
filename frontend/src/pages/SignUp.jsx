@@ -23,6 +23,7 @@ export default function SignUp() {
       <legend>Create a new account!</legend>
       <input name='email' type='email' placeholder='Email' required />
       <input name='password' type='password' placeholder='Password' required />
+      <input name='password' type='password' placeholder='Password' required />
       <input type='submit' />
     </form>
   )

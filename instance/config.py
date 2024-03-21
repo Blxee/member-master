@@ -1,0 +1,6 @@
+REDIS_HOST = 'localhost'
+REDIS_PORT = '6379'
+DB_HOST = 'localhost'
+DB_USER = 'mm_user'
+DB_PASSWORD = 'good-password'
+DB_NAME = 'membermaster_dev'
