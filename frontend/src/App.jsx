@@ -7,6 +7,8 @@ import './App.css';
 import Home from './pages/Home';
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
+import Nav from './Nav';
+import Footer from './Footer';
 
 const router = createBrowserRouter([
   { path: '/', element: <Home /> },
@@ -17,7 +19,11 @@ const router = createBrowserRouter([
 function App() {
 
   return (
-    <RouterProvider router={router} />
+    <div id='main-container' className='d-flex flex-column'>
+      <Nav />
+      <RouterProvider router={router} />
+      <Footer />
+    </div>
   );
 }
 
