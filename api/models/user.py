@@ -8,6 +8,9 @@ class User(Base):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+    def is_password_valid(self, password):
+        pass
+
     @classmethod
     def create_user(cls, request: Request):
         request.headers

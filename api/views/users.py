@@ -7,7 +7,6 @@ users_routes = Blueprint('users', __name__, url_prefix='/api/users')
 @users_routes.route('/sign-up', methods=['POST'], strict_slashes=False)
 def sign_up():
     res = jsonify()
-    res.set_cookie('X-Token', '')
     return res
 
 
