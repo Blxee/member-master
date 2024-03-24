@@ -6,20 +6,33 @@ from datetime import datetime
 class Base:
     """Base model handles CRUD operation on the database."""
 
-    table_name: str
-    id: int
-    date_created: datetime
-    date_updated: datetime
+    _initailized = False
+    _table_name: str
+    _max_id: int
 
-    def __init__(self) -> None:
-        raise NotImplementedError('the Base class is abstract!')
+    def __init__(self, **kwargs):
+        if not self._initailized:
+            raise NotImplementedError('the Base class is abstract!')
+        self._id = self._max_id
+        self._date_created = datetime.now()
+        self._date_updated = datetime.now()
+        self._max_id += 1
+
+
+    @classmethod
+    def __init_subclass__(cls):
+        '''Sets the class attr table_name and initializes common fields.'''
+        cls._table_name = cls.__name__.lower()
+        if not cls._initailized:
+            cls._initailized = True
+
 
     def save(self):
         """Saves the current instance to the database."""
         cursor = current_app.mysql_client.cursor()
         cursor.execute(
-            f"""REPLACE INTO ${self.table_name} WHERE id = '%s'""",
-            (self.id,),
+            f"""REPLACE INTO ${self._table_name} WHERE id = '%s'""",
+            (self._id,),
         )
         cursor.close()
 
@@ -28,8 +41,8 @@ class Base:
         """Deletes the current instance from the database."""
         cursor = current_app.mysql_client.cursor()
         cursor.execute(
-            f"""DELETE FROM ${self.table_name} WHERE id = '%s'""",
-            (self.id,),
+            f"""DELETE FROM ${self._table_name} WHERE id = '%s'""",
+            (self._id,),
         )
         cursor.close()
 
@@ -44,8 +57,3 @@ class Base:
     @classmethod
     def search(cls, **kwargs):
         pass
-
-    @classmethod
-    def __init_subclass__(cls):
-        '''Sets the class attr table_name to be the class name in lowercase.'''
-        cls.table_name = cls.__name__.lower()
