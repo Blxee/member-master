@@ -15,6 +15,8 @@ class TokenAuth(Auth):
     def get_user_id(self, request: Request) -> str | None:
         """Returns the user id cached in redis if exists of None"""
         token = self.get_token(request)
+        if token is None:
+            return None
         key = f'auth_{token}'
         user_id = current_app.redis_client.GET(key)
         if user_id:
