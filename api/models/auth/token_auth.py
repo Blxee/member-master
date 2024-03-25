@@ -59,7 +59,7 @@ class TokenAuth(Auth):
         user_id = self.get_user_id(request)
         if user_id:
             token = self.get_token(request)
-            current_app.redis_client.DEL(f'auth_{token}')
+            current_app.redis_client.delete(f'auth_{token}')
             respose.set_cookie('X-Token', '')
             return True
         else:
@@ -68,5 +68,6 @@ class TokenAuth(Auth):
     def current_user(self, request: Request) -> User | None:
         """Retrieves the currently logged user using the request."""
         user_id = self.get_user_id(request)
-        user = User.search(id=user_id)
-        return user
+        users = User.search(id=user_id)
+        if users is not None and len(users) > 0:
+            return users[0]
