@@ -64,7 +64,7 @@ class Base:
         """Deletes the current instance from the database."""
         cursor = current_app.mysql_client.cursor()
         cursor.execute(
-            f"""DELETE FROM {self.table_name} WHERE id = '%s'""",
+            f"""DELETE FROM {self.table_name} WHERE id = %s""",
             (self.id,),
         )
         cursor.close()
@@ -89,17 +89,17 @@ class Base:
         
         cursor = current_app.mysql_client.cursor()
         query_fields = ','.join(keys)
-        query_search = "'%s'," * len(values)
+        query_search = ('%s,' * len(values))[:-1]
         cursor.execute(
             f"""
-            SELECT {query_fields} FROM {cls.table_name}
+            SELECT * FROM {cls.table_name}
             WHERE ({query_fields}) = ({query_search})
             """,
             values)
 
         users = []
-        col_names, *rows = zip(*cursor.description)
-        for row in rows:
+        col_names, *_ = zip(*cursor.description)
+        for row in cursor.fetchall():
             kwargs = {
                 col_names[i]: row[i]
                 for i in range(len(col_names))
