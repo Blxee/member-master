@@ -10,15 +10,15 @@ class Base:
 
     fields = ('id',)
     table_name: str
-    max_id: int
 
     def __init__(self, **kwargs):
         if not self._initailized:
             raise NotImplementedError('the Base class is abstract!')
-        self.id = self.max_id
-        self._date_created = datetime.now()
-        self._date_updated = datetime.now()
-        self.max_id += 1
+        for key, val in kwargs.items():
+            setattr(self, key, val)
+        # self.id = max_id
+        # self._date_created = datetime.now()
+        # self._date_updated = datetime.now()
 
     @classmethod
     def __init_subclass__(cls):
@@ -47,17 +47,18 @@ class Base:
         dic = self.to_dict()
         # zip is important for maintaining order
         keys, values = tuple(zip(*dic.items()))
-
+ 
         cursor = current_app.mysql_client.cursor()
         cursor.execute(
             f"""
             REPLACE INTO {self.table_name} ({','.join(keys)})
-            VALUES ({'%s,' * len(values)}) WHERE id = '%s'
+            VALUES ({('%s,' * len(values))[:-1]})
             """,
-            (*values, self.id),
+            values,
         )
         cursor.close()
         current_app.mysql_client.commit()
+        return True
 
     def delete(self):
         """Deletes the current instance from the database."""

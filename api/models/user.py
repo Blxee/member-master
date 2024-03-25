@@ -5,6 +5,7 @@ from flask import Request
 
 class User(Base):
     table_name = 'users'
+    fields = ('id', 'email', 'password')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
