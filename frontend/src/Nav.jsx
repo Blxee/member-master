@@ -12,7 +12,7 @@ export default function Nav() {
   return (
     <>
       <div style={{height}} />
-      <nav ref={navRef} className='position-fixed'>
+      <nav ref={navRef} className='position-fixed flex-column md-flex-row'>
         <span>MemberMaster</span>
 
         <Link to='/'>
