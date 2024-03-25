@@ -1,5 +1,4 @@
 from flask import Blueprint, current_app, jsonify, make_response, request
-
 from api.models.user import User
 
 
@@ -13,6 +12,15 @@ def sign_up():
 
     email = request.json.get('email')
     password = request.json.get('password')
+
+    if email is None or password is None:
+        response.status_code = 400
+        response.data = jsonify({
+            'status': 'error',
+            'message': 'invalid credentials',
+        })
+        return response
+
     user = User(email=email, password=password)
 
     if user.save():
@@ -34,7 +42,9 @@ def sign_up():
 def sign_in():
     response = make_response()
     response.headers['Content-Type'] = 'application/json'
+
     result = current_app.auth.login_user(request, response)
+
     if result == True:
         response.status_code = 200
         response.data = jsonify({
@@ -55,7 +65,9 @@ def sign_out():
     """Sign the user out by removing the token from the server and client."""
     response = make_response()
     response.headers['Content-Type'] = 'application/json'
+
     result = current_app.auth.logout_user(request, response)
+
     if result == True:
         response.status_code = 200
         response.data = jsonify({

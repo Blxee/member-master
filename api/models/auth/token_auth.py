@@ -8,6 +8,9 @@ from uuid import uuid4
 class TokenAuth(Auth):
     """Class implementing token based authentication."""
 
+    def __init__(self):
+        pass
+
     def get_token(self, request: Request) -> str | None:
         """Returns the token header value from the request or None."""
         return request.headers.get('X-Token')

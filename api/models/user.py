@@ -4,12 +4,13 @@ from flask import Request
 
 
 class User(Base):
+    table_name = 'users'
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
     def is_password_valid(self, password):
-        pass
+        return True
 
     @classmethod
     def create_user(cls, request: Request):
