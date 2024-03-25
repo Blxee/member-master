@@ -1,13 +1,33 @@
 from flask import Blueprint, current_app, jsonify, make_response, request
 
+from api.models.user import User
+
 
 users_routes = Blueprint('users', __name__, url_prefix='/api/users')
 
 
 @users_routes.route('/sign-up', methods=['POST'], strict_slashes=False)
 def sign_up():
-    res = jsonify()
-    return res
+    response = make_response()
+    response.headers['Content-Type'] = 'application/json'
+
+    email = request.json.get('email')
+    password = request.json.get('password')
+    user = User(email=email, password=password)
+
+    if user.save():
+        response.status_code = 200
+        response.data = jsonify({
+            'status': 'success',
+            'message': 'user created successfully',
+        })
+    else:
+        response.status_code = 400
+        response.data = jsonify({
+            'status': 'error',
+            'message': 'user could not be created',
+        })
+    return response
 
 
 @users_routes.route('/sign-in', methods=['POST'], strict_slashes=False)
