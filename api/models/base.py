@@ -15,7 +15,7 @@ class Base:
     def __init__(self, **kwargs):
         if not self._initailized:
             raise NotImplementedError('the Base class is abstract!')
-        self._id = self.max_id
+        self.id = self.max_id
         self._date_created = datetime.now()
         self._date_updated = datetime.now()
         self.max_id += 1
@@ -54,18 +54,20 @@ class Base:
             REPLACE INTO {self.table_name} ({','.join(keys)})
             VALUES ({'%s,' * len(values)}) WHERE id = '%s'
             """,
-            (*values, self._id),
+            (*values, self.id),
         )
         cursor.close()
+        current_app.mysql_client.commit()
 
     def delete(self):
         """Deletes the current instance from the database."""
         cursor = current_app.mysql_client.cursor()
         cursor.execute(
-            f"""DELETE FROM ${self.table_name} WHERE id = '%s'""",
-            (self._id,),
+            f"""DELETE FROM {self.table_name} WHERE id = '%s'""",
+            (self.id,),
         )
         cursor.close()
+        current_app.mysql_client.commit()
 
     @classmethod
     def all(cls):
@@ -77,4 +79,32 @@ class Base:
 
     @classmethod
     def search(cls, **kwargs):
-        pass
+        """Filter search throught db and return instances as list."""
+        keys, values = tuple(zip(*kwargs.items()))
+
+        # if kwargs contains field which aren't in the db
+        if not set(keys).issubset(set(cls.fields)):
+            return None
+        
+        cursor = current_app.mysql_client.cursor()
+        query_fields = ','.join(keys)
+        query_search = "'%s'," * len(values)
+        cursor.execute(
+            f"""
+            SELECT {query_fields} FROM {cls.table_name}
+            WHERE ({query_fields}) = ({query_search})
+            """,
+            values)
+
+        users = []
+        col_names, *rows = zip(*cursor.description)
+        for row in rows:
+            kwargs = {
+                col_names[i]: row[i]
+                for i in range(len(col_names))
+            }
+            instance = cls(**kwargs)
+            users.append(instance)
+
+        cursor.close()
+        return users
