@@ -1,5 +1,17 @@
+import './Home.css';
+
 export default function Home() {
   return (
-    <h1 style={{height: '200vh'}}>hello world from home</h1>
+    <article>
+      <section>
+        hello
+      </section>
+      <section>
+        hello again
+      </section>
+      <section>
+        bruh
+      </section>
+    </article>
   );
 }
