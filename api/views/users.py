@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, current_app, jsonify, make_response, request
 
 
 users_routes = Blueprint('users', __name__, url_prefix='/api/users')
@@ -12,14 +12,40 @@ def sign_up():
 
 @users_routes.route('/sign-in', methods=['POST'], strict_slashes=False)
 def sign_in():
-    return 'signed in successfully'
+    response = make_response()
+    response.headers['Content-Type'] = 'application/json'
+    result = current_app.auth.login_user(request, response)
+    if result == True:
+        response.status_code = 200
+        response.data = jsonify({
+            'status': 'success',
+            'message': 'user signed in successfully',
+        })
+    else:
+        response.status_code = 401
+        response.data = jsonify({
+            'status': 'error',
+            'message': 'user could not be authorized',
+        })
+    return response
 
 
 @users_routes.route('/sign-out', methods=['DELETE'], strict_slashes=False)
 def sign_out():
     """Sign the user out by removing the token from the server and client."""
-    res = jsonify({ 'status': 'success', 'message': 'user signed out successfully' })
-    res.status_code = 200
-    # delete the token from cookies by replacing with empty string
-    res.set_cookie('X-Token', '')
-    return res
+    response = make_response()
+    response.headers['Content-Type'] = 'application/json'
+    result = current_app.auth.logout_user(request, response)
+    if result == True:
+        response.status_code = 200
+        response.data = jsonify({
+            'status': 'success',
+            'message': 'user signed out successfully',
+        })
+    else:
+        response.status_code = 401
+        response.data = jsonify({
+            'status': 'error',
+            'message': 'user could not be authorized',
+        })
+    return response

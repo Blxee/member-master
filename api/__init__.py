@@ -24,11 +24,11 @@ def create_app(test_config=None):
         database=app.config['DB_NAME'],
     )
 
-    if app.config['AUTH_TYPE'] == 'AUTH':
+    if app.config['AUTH_TYPE'] == 'auth':
         app.auth = Auth()
-    elif app.config['AUTH_TYPE'] == 'BASIC_AUTH':
+    elif app.config['AUTH_TYPE'] == 'basic-auth':
         app.auth = BasicAuth()
-    elif app.config['AUTH_TYPE'] == 'TOKEN_AUTH':
+    elif app.config['AUTH_TYPE'] == 'token-auth':
         app.auth = TokenAuth()
 
     app.register_blueprint(users_routes)
