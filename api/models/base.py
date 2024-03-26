@@ -47,7 +47,7 @@ class Base:
         dic = self.to_dict()
         # zip is important for maintaining order
         keys, values = tuple(zip(*dic.items()))
- 
+
         cursor = current_app.mysql_client.cursor()
         cursor.execute(
             f"""
@@ -73,7 +73,22 @@ class Base:
 
     @classmethod
     def all(cls):
-        pass
+        """Fetches all instances of a class."""
+        cursor = current_app.mysql_client.cursor()
+        cursor.execute(f"""SELECT * FROM {cls.table_name}""")
+
+        models = []
+        col_names, *_ = zip(*cursor.description)
+        for row in cursor.fetchall():
+            kwargs = {
+                col_names[i]: row[i]
+                for i in range(len(col_names))
+            }
+            instance = cls(**kwargs)
+            models.append(instance)
+
+        cursor.close()
+        return models
 
     @classmethod
     def get(cls, id):
@@ -87,7 +102,7 @@ class Base:
         # if kwargs contains field which aren't in the db
         if not set(keys).issubset(set(cls.fields)):
             return None
-        
+
         cursor = current_app.mysql_client.cursor()
         query_fields = ','.join(keys)
         query_search = ('%s,' * len(values))[:-1]
@@ -98,7 +113,7 @@ class Base:
             """,
             values)
 
-        users = []
+        models = []
         col_names, *_ = zip(*cursor.description)
         for row in cursor.fetchall():
             kwargs = {
@@ -106,7 +121,7 @@ class Base:
                 for i in range(len(col_names))
             }
             instance = cls(**kwargs)
-            users.append(instance)
+            models.append(instance)
 
         cursor.close()
-        return users
+        return models
