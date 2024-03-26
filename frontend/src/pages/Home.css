@@ -9,11 +9,12 @@ article {
 section {
   scroll-snap-align: center;
   display: block;
-  width: 100%;
-  height: 75%;
+  width: 80%;
+  height: 80%;
   text-align: center;
   border: 20px solid green;
   background-color: red;
+  margin: auto;
   margin-top: 25%;
   margin-bottom: 25%;
 }

@@ -13,9 +13,13 @@ import Footer from './Footer';
 const router = createBrowserRouter([{
   path: '/',
   element: (
-    <div id='main-container' className='d-flex flex-column'>
-      <Nav />
-      <Outlet />
+    <div id='main-container' className='d-flex flex-row flex-md-column'>
+      <div className='d-flex flex-row'>
+        <Nav />
+        <div className='flex-grow-1'>
+          <Outlet />
+        </div>
+      </div>
       <Footer />
     </div>
   ),

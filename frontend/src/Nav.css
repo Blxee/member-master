@@ -1,0 +1,16 @@
+.nav-element:focus {
+  position: relative;
+  overflow: visible;
+  background-color: green;
+  height: 150px;
+  border-top-left-radius: 1rem;
+}
+
+.nav-element:focus::after {
+  position: absolute;
+  content: 'hello';
+  top: 100%;
+  left: 0%;
+  background-color: red;
+  border: 5px green solid;
+}
