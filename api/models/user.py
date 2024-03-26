@@ -30,5 +30,7 @@ class User(Base):
         """Verifies whether the password is correct by hashing."""
         if not hasattr(self, 'password'):
             return False
-        hashed = hash_str(raw_password)
-        return self.password == hashed
+        return bcrypt.checkpw(
+            raw_password.encode('utf-8'),
+            self.password.encode('utf-8')
+        )

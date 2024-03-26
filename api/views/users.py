@@ -21,7 +21,7 @@ def sign_up():
         }).data
         return response
 
-    user = User(id=23, email=email, password=password)
+    user = User(id=23, email=email, raw_password=password)
 
     if user.save():
         response.status_code = 200
