@@ -1,7 +1,6 @@
 """Module for the Business class defintion."""
 from flask import current_app
 from api.models.base import Base
-from api.models.user import User
 
 
 class Business(Base):
@@ -9,8 +8,9 @@ class Business(Base):
     table_name = 'businesses'
     fields = (*Base.fields, 'name', 'logo', 'owner_id') # == (id, name, logo, owner_id)
 
-    def get_clients(self) -> list[User]:
+    def get_clients(self):
         """Get all clients subscribed to this business."""
+        from api.models.user import User
         cursor = current_app.mysql_client.cursor()
         cursor.execute(
             f"""
