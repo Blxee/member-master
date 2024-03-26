@@ -18,23 +18,23 @@ def sign_up():
         response.data = jsonify({
             'status': 'error',
             'message': 'invalid credentials',
-        })
+        }).data
         return response
 
-    user = User(email=email, password=password)
+    user = User(id=23, email=email, password=password)
 
     if user.save():
         response.status_code = 200
         response.data = jsonify({
             'status': 'success',
             'message': 'user created successfully',
-        })
+        }).data
     else:
         response.status_code = 400
         response.data = jsonify({
             'status': 'error',
             'message': 'user could not be created',
-        })
+        }).data
     return response
 
 
@@ -50,13 +50,13 @@ def sign_in():
         response.data = jsonify({
             'status': 'success',
             'message': 'user signed in successfully',
-        })
+        }).data
     else:
         response.status_code = 401
         response.data = jsonify({
             'status': 'error',
             'message': 'user could not be authorized',
-        })
+        }).data
     return response
 
 
@@ -73,11 +73,11 @@ def sign_out():
         response.data = jsonify({
             'status': 'success',
             'message': 'user signed out successfully',
-        })
+        }).data
     else:
         response.status_code = 401
         response.data = jsonify({
             'status': 'error',
             'message': 'user could not be authorized',
-        })
+        }).data
     return response

@@ -10,15 +10,15 @@ class Base:
 
     fields = ('id',)
     table_name: str
-    max_id: int
 
     def __init__(self, **kwargs):
         if not self._initailized:
             raise NotImplementedError('the Base class is abstract!')
-        self.id = self.max_id
-        self._date_created = datetime.now()
-        self._date_updated = datetime.now()
-        self.max_id += 1
+        for key, val in kwargs.items():
+            setattr(self, key, val)
+        # self.id = max_id
+        # self._date_created = datetime.now()
+        # self._date_updated = datetime.now()
 
     @classmethod
     def __init_subclass__(cls):
@@ -47,23 +47,24 @@ class Base:
         dic = self.to_dict()
         # zip is important for maintaining order
         keys, values = tuple(zip(*dic.items()))
-
+ 
         cursor = current_app.mysql_client.cursor()
         cursor.execute(
             f"""
             REPLACE INTO {self.table_name} ({','.join(keys)})
-            VALUES ({'%s,' * len(values)}) WHERE id = '%s'
+            VALUES ({('%s,' * len(values))[:-1]})
             """,
-            (*values, self.id),
+            values,
         )
         cursor.close()
         current_app.mysql_client.commit()
+        return True
 
     def delete(self):
         """Deletes the current instance from the database."""
         cursor = current_app.mysql_client.cursor()
         cursor.execute(
-            f"""DELETE FROM {self.table_name} WHERE id = '%s'""",
+            f"""DELETE FROM {self.table_name} WHERE id = %s""",
             (self.id,),
         )
         cursor.close()
@@ -88,17 +89,17 @@ class Base:
         
         cursor = current_app.mysql_client.cursor()
         query_fields = ','.join(keys)
-        query_search = "'%s'," * len(values)
+        query_search = ('%s,' * len(values))[:-1]
         cursor.execute(
             f"""
-            SELECT {query_fields} FROM {cls.table_name}
+            SELECT * FROM {cls.table_name}
             WHERE ({query_fields}) = ({query_search})
             """,
             values)
 
         users = []
-        col_names, *rows = zip(*cursor.description)
-        for row in rows:
+        col_names, *_ = zip(*cursor.description)
+        for row in cursor.fetchall():
             kwargs = {
                 col_names[i]: row[i]
                 for i in range(len(col_names))
