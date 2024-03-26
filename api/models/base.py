@@ -14,9 +14,9 @@ class Base:
     def __init__(self, **kwargs):
         if not self._initailized:
             raise NotImplementedError('the Base class is abstract!')
+        self.id = None
         for key, val in kwargs.items():
             setattr(self, key, val)
-        # self.id = max_id
         # self._date_created = datetime.now()
         # self._date_updated = datetime.now()
 
@@ -30,7 +30,7 @@ class Base:
         """Magic method to prevent adding properties to instances."""
         if name not in self.fields:
             raise AttributeError(
-                'cannot set other attribures than those already defined'
+                f'cannot set other attribures than those in db shcema: {name}'
             )
         super().__setattr__(name, value)
 
@@ -56,6 +56,7 @@ class Base:
             """,
             values,
         )
+        self.id = cursor.lastrowid
         cursor.close()
         current_app.mysql_client.commit()
         return True
