@@ -22,8 +22,8 @@ CREATE TABLE IF NOT EXISTS membermaster_dev.business_clients (
   client_id INT,
   business_id INT,
   PRIMARY KEY(client_id, business_id),
-  FOREIGN KEY(client_id) REFERENCES membermaster_dev.users(id),
-  FOREIGN KEY(business_id) REFERENCES membermaster_dev.businesses(id)
+  FOREIGN KEY(client_id) REFERENCES membermaster_dev.users(id) ON DELETE CASCADE,
+  FOREIGN KEY(business_id) REFERENCES membermaster_dev.businesses(id) ON DELETE CASCADE
 );
 
 GRANT ALL PRIVILEGES ON membermaster_dev.* TO 'mm_user_dev'@'%';

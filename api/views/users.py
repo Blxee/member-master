@@ -1,5 +1,6 @@
 from flask import Blueprint, current_app, jsonify, make_response, request
 from api.models.user import User
+from api.utils import require_auth
 
 
 users_routes = Blueprint('users', __name__, url_prefix='/api/users')
@@ -61,6 +62,7 @@ def sign_in():
 
 
 @users_routes.route('/sign-out', methods=['DELETE'], strict_slashes=False)
+@require_auth
 def sign_out():
     """Sign the user out by removing the token from the server and client."""
     response = make_response()
@@ -68,16 +70,9 @@ def sign_out():
 
     result = current_app.auth.logout_user(request, response)
 
-    if result == True:
-        response.status_code = 200
-        response.data = jsonify({
-            'status': 'success',
-            'message': 'user signed out successfully',
-        }).data
-    else:
-        response.status_code = 401
-        response.data = jsonify({
-            'status': 'error',
-            'message': 'user could not be authorized',
-        }).data
+    response.status_code = 200
+    response.data = jsonify({
+        'status': 'success',
+        'message': 'user signed out successfully',
+    }).data
     return response
