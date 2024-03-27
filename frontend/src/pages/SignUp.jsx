@@ -19,12 +19,22 @@ export default function SignUp() {
   };
 
   return (
-    <form onSubmit={submitForm}>
-      <legend>Create a new account!</legend>
-      <input name='email' type='email' placeholder='Email' required />
-      <input name='password' type='password' placeholder='Password' required />
-      <input name='password' type='password' placeholder='Password' required />
-      <input type='submit' />
+    <form onSubmit={submitForm} className="card container w-50 p-4 gap-3 my-auto">
+      <legend>Join MemberMaster:</legend>
+
+      <label className="form-label">Email Address:</label>
+      <input className="form-control" name='email' type='email' placeholder='Email' required />
+
+      <label className="form-label">Password:</label>
+      <input className="form-control" name='password1' type='password' placeholder='Password' required />
+
+      <label className="form-label">Confirm Password:</label>
+      <input className="form-control" name='password2' type='password' placeholder='Password' required />
+
+      <label className="form-label">Phone Number:</label>
+      <input className="form-control" name='phone' type='tel' placeholder='Phone Number' required />
+
+      <input className="btn btn-primary bg-gradient w-25 align-self-center" type='submit' />
     </form>
   )
 }
