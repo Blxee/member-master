@@ -1,32 +1,41 @@
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../App";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 
 export default function SignIn() {
-  const { user, setUser } = useContext(UserContext);
+  const { userId, setUserId, pushAlert } = useContext(UserContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (userId) {
+      navigate('/');
+    }
+  });
 
   const submitForm = (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
-    const data = Array.from(formData.entries()).map(([key, value]) => ({ [key]: value }));
-    console.log(data);
+    const data = {};
+    formData.forEach((value, key) => data[key] = value );
 
-    fetch('/api/v1/sign-in', {
+    fetch('http://localhost:5000/api/users/sign-in', {
       method: 'POST',
+      mode: 'cors',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     }).then((res) => {
       if (res.ok) {
+        res.json().then((json) => setUserId(json.id));
         console.log('Signed in successfully!');
+        pushAlert('Welcome back!', 'primary')
         navigate('/')
       }
-    })
+    });
   };
 
   return (
-    <form onSubmit={submitForm} className="card container w-50 p-4 gap-3 my-auto">
+    <form onSubmit={submitForm} className="card rounded-4 shadow container w-50 p-4 gap-3 my-auto">
       <legend>Sign In to your account!</legend>
 
       <label className="form-label">Email Address:</label>
