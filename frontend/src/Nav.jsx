@@ -23,10 +23,10 @@ export default function Nav() {
       {/* <div style={{height}} /> */}
       {/* <nav ref={navRef} className='position-fixed d-flex flex-row flex-md-column'> */}
       {/* <h1>{direction}</h1> */}
-      <nav ref={navRef} style={{width: '7vw', height: '100dvh'}} className='bg-black d-flex flex-column justify-content-around align-items-center'>
+      <nav ref={navRef} className='bg-secondary bg-gradient d-flex flex-column justify-content-start gap-5 align-items-center'>
         {/* <span>MemberMaster</span> */}
 
-        <img src='/membermaster.svg' alt='MemberMaster logo' width='70%' />
+        <img className='mt-4' src='/membermaster.svg' alt='MemberMaster logo' width='70%' />
 
         <Link to='/' className='nav-element'>
           <FontAwesomeIcon icon={faHouseChimney} color='white' size='2xl' />

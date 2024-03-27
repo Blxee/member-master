@@ -3,7 +3,6 @@ article {
   height: 100svh;
   overflow-x: hidden;
   overflow-y: scroll;
-  border: 20px solid blue;
 }
 
 section {
@@ -11,9 +10,6 @@ section {
   display: block;
   width: 80%;
   height: 80%;
-  text-align: center;
-  border: 20px solid green;
-  background-color: red;
   margin: auto;
   margin-top: 25%;
   margin-bottom: 25%;
