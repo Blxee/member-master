@@ -1,12 +1,32 @@
 nav {
-  width: 7vw;
+  z-index: 1;
+  width: 4vw;
   height: 100svh;
-}
-.nav-element:focus {
-  position: relative;
+  background-color: #5755FE;
   overflow: visible;
 }
 
-.nav-element:focus::after {
+.nav-element {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1/1;
+  text-align: center;
+}
+
+.nav-label {
   position: absolute;
+  overflow: hidden;
+  border-radius: 0% 1em 1em 0%;
+  width: 0%;
+  padding: 1rem 0rem;
+  top: 50%;
+  left: 100%;
+  text-wrap: nowrap;
+  background-color: #5755FE;
+  transition: all ease 300ms;
+}
+
+.nav-element:hover .nav-label {
+  width: auto;
+  padding: 1em;
 }
