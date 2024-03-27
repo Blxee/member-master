@@ -1,6 +1,6 @@
 # MemberMaster:
 
-![alt text](./frontend/public/membermaster.svg) 
+<img src="./frontend/public/membermaster.svg" />
 
 **Is a client management system for business owners with a subsciption scheme.**
 
