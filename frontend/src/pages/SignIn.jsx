@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../App";
 import { useContext, useEffect } from "react";
 
@@ -45,6 +45,8 @@ export default function SignIn() {
       <input className="form-control" name='password' type='password' placeholder='Password' required />
 
       <input className="btn btn-primary bg-gradient w-25 align-self-center" type='submit' />
+
+      <div className="align-self-end">need an account? <Link to='/sign-up'>Sign Up</Link>!</div>
     </form>
   )
 }

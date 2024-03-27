@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { UserContext } from "../App";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function SignUp() {
   const { userId, pushAlert } = useContext(UserContext);
@@ -52,6 +52,8 @@ export default function SignUp() {
       <input className="form-control" name='phone' type='tel' placeholder='Phone Number' required />
 
       <input className="btn btn-primary bg-gradient w-25 align-self-center" type='submit' />
+
+      <div className="align-self-end">already have an account? <Link to='/sign-in'>Sign In</Link>!</div>
     </form>
   )
 }

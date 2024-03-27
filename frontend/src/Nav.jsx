@@ -1,4 +1,4 @@
-import { faHouseChimney, faRightFromBracket, faRocket, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faHouseChimney, faRightFromBracket, faRightToBracket, faRocket, faUser } from '@fortawesome/free-solid-svg-icons';
 import './Nav.css';
 import { UserContext } from './App';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -28,40 +28,41 @@ export default function Nav() {
   return (
     <>
       <nav className='position-sticky top-0 align-self-start bg-gradient d-flex flex-column justify-content-start gap-5 align-items-center'>
-        <img className='mt-4' style={{filter: 'contrast(300%)'}} src='/membermaster-gray.svg' alt='MemberMaster logo' width='80%' />
+        <Link to='/' className='nav-element'>
+          <img className='mt-4' style={{filter: 'contrast(300%)'}} src='/membermaster-gray.svg' alt='MemberMaster logo' width='80%' />
+        </Link>
 
         <Link to='/' className='nav-element'>
           <FontAwesomeIcon icon={faHouseChimney} color='white' size='xl' />
           <span className='nav-label fw-bold text-white translate-middle-y'>Home</span>
         </Link>
 
-        <Link to='/sign-in' className='nav-element'>
-          <button>Sign In</button>
-        </Link>
+        { userId &&
+          <Link to='/profile/my___udddd' className='nav-element'>
+            <FontAwesomeIcon icon={faUser} color='white' size='xl' />
+            <span className='nav-label fw-bold text-white translate-middle-y'>Profile</span>
+          </Link>
+        }
 
-        <Link to='/sign-up' className='nav-element'>
-          <button>Sign Up</button>
-        </Link>
+        { !userId &&
+          <Link to='/sign-up' className='nav-element'>
+            <FontAwesomeIcon icon={faRightToBracket} color='white' size='xl' />
+            <span className='nav-label fw-bold text-white translate-middle-y'>Join</span>
+          </Link>
+        }
 
         { userId &&
           <Link to='/dashboard' className='nav-element'>
             <FontAwesomeIcon icon={faRocket} color='white' size='xl' />
-          <span className='nav-label fw-bold text-white translate-middle-y'>Dashboard</span>
+            <span className='nav-label fw-bold text-white translate-middle-y'>Dashboard</span>
           </Link>
         }
 
         { userId &&
-          <div className='nav-element'>
+          <div className='nav-element mt-auto mb-2'>
             <FontAwesomeIcon onClick={logout} icon={faRightFromBracket} color='white' size='xl' />
             <span className='nav-label fw-bold text-white translate-middle-y'>Sign Out</span>
           </div>
-        }
-
-        { userId &&
-          <Link to='/profile/my___udddd' className='nav-element mt-auto mb-5'>
-            <FontAwesomeIcon icon={faUser} color='white' size='xl' />
-            <span className='nav-label fw-bold text-white translate-middle-y'>Profile</span>
-          </Link>
         }
       </nav>
     </>

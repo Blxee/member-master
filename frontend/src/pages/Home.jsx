@@ -2,28 +2,38 @@ import { Link } from 'react-router-dom';
 import './Home.css';
 
 function Heading() {
-  const style = {
-    maskImage: 'linear-gradient(to right, white, transparent 50%)',
-    backgroundImage: 'url(\'/membermaster-gray.svg\')',
-    backgroundSize: 'contain',
-    backgroundPosition: 'right',
-    backgroundRepeat: 'no-repeat',
-  }
 
   return (
-    <section className='card rounded-5 p-4 w-100 h-100'>
-      <h1>MemberMaster</h1>
-      <p>
-      Seamlessly manage memberships and track client accounts hassle-free.
-      </p>
+    <section className='card container-fluid shadow rounded-4 p-4 w-100 h-100'>
+      <div className='row w-100 h-100'>
+        <div className='col w-100 h-100 d-flex flex-column justify-content-between'>
+          <img className='mx-auto' style={{filter: 'drop-shadow(0px 0.3em 4px black)'}} width='30%' srcSet='/membermaster.svg' alt='MemberMaster logo' />
 
-      <Link to='/sign-up'>
-        <button className='btn btn-primary bg-gradient'>Sign Up Now!</button>
-      </Link>
+          <h1 className='mx-auto'>MemberMaster</h1>
 
-      <Link to='/sign-in'>
-        <button className='btn btn-outline-primary'>Sign In</button>
-      </Link>
+          <p>
+            Seamlessly manage memberships and track client accounts hassle-free.
+          </p>
+
+          <hr/>
+
+          <div className='d-flex flex-row justify-content-between'>
+            <Link className='w-50 p-2' to='/sign-up'>
+              <button className='btn btn-primary bg-gradient w-100'>
+                Sign Up Now!
+              </button>
+            </Link>
+
+            <Link className='w-50 p-2' to='/sign-in'>
+              <button className='btn btn-outline-primary w-100'>Sign In</button>
+            </Link>
+          </div>
+
+        </div>
+        <div className='col w-100 h-100 d-flex'>
+          <img width='90%' className='m-auto' srcSet='/sports.svg' alt='MemberMaster logo' />
+        </div>
+      </div>
     </section>
   )
 }
@@ -32,8 +42,36 @@ function Heading() {
 function Feature1() {
 
   return (
-    <section>
-      <h1>Feature 1 is great</h1>
+    <section className='card container-fluid shadow rounded-4 p-4 w-100 h-100'>
+      <div className='row w-100 h-100'>
+        <div className='col w-100 h-100 d-flex'>
+          <img width='90%' className='m-auto' srcSet='/hiking.svg' alt='MemberMaster logo' />
+        </div>
+        <div className='col w-100 h-100 d-flex flex-column justify-content-between'>
+          <img className='mx-auto' style={{filter: 'drop-shadow(0px 0.3em 4px black)'}} width='30%' srcSet='/membermaster.svg' alt='MemberMaster logo' />
+
+          <h1 className='mx-auto'>MemberMaster</h1>
+
+          <p>
+            Seamlessly manage memberships and track client accounts hassle-free.
+          </p>
+
+          <hr/>
+
+          <div className='d-flex flex-row justify-content-between'>
+            <Link className='w-50 p-2' to='/sign-up'>
+              <button className='btn btn-primary bg-gradient w-100'>
+                Sign Up Now!
+              </button>
+            </Link>
+
+            <Link className='w-50 p-2' to='/sign-in'>
+              <button className='btn btn-outline-primary w-100'>Sign In</button>
+            </Link>
+          </div>
+
+        </div>
+      </div>
     </section>
   )
 }
@@ -50,8 +88,9 @@ function Feature2() {
 
 
 export default function Home() {
+  
   return (
-    <article className='p-4 bg-secondary'>
+    <article className='p-4'>
       <Heading />
       <Feature1 />
       <Feature2 />
