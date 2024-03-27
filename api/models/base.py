@@ -35,7 +35,7 @@ class Base:
         super().__setattr__(name, value)
 
     def to_dict(self) -> dict:
-        """Collects all the relavant fields into a dict."""
+        """Collects all the relevant fields into a dict."""
         dic = {
             key: self.__dict__.get(key)
             for key in self.fields
