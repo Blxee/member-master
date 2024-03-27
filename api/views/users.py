@@ -91,3 +91,17 @@ def get_user(user_id):
         }), 400
     user = user[0].to_dict() # TODO: don't send hash_pwd
     return jsonify(user), 200
+
+
+@users_routes.route('/current', methods=['GET'], strict_slashes=False)
+@require_auth
+def current_user():
+    """Retrieve the current authenticated user."""
+    user = current_app.auth.current_user(request)
+    if not user:
+        return jsonify({
+            'status': 'error',
+            'message': 'no such user exists',
+        }), 400
+    user = user[0].to_dict() # TODO: don't send hash_pwd
+    return jsonify(user), 200
