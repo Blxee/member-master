@@ -1,8 +1,8 @@
-# MemberMaster:
-
 <div align="center">
     <img src="./frontend/public/membermaster.svg" width="50%" />
 </div>
+
+# MemberMaster:
 
 **Is a client management system for business owners with a subsciption scheme.**
 
