@@ -9,7 +9,6 @@ nav {
 .nav-element {
   position: relative;
   width: 100%;
-  aspect-ratio: 1/1;
   text-align: center;
 }
 

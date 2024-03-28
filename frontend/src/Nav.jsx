@@ -28,8 +28,8 @@ export default function Nav() {
   return (
     <>
       <nav className='position-sticky top-0 align-self-start bg-gradient d-flex flex-column justify-content-start gap-5 align-items-center'>
-        <Link to='/' className='nav-element'>
-          <img className='mt-4' style={{filter: 'contrast(300%)'}} src='/membermaster-gray.svg' alt='MemberMaster logo' width='80%' />
+        <Link to='/' className='nav-element mt-4'>
+          <img style={{filter: 'contrast(300%)'}} src='/membermaster-gray.svg' alt='MemberMaster logo' width='80%' />
         </Link>
 
         <Link to='/' className='nav-element'>
@@ -59,7 +59,7 @@ export default function Nav() {
         }
 
         { userId &&
-          <div className='nav-element mt-auto mb-2'>
+          <div className='nav-element mt-auto mb-4'>
             <FontAwesomeIcon onClick={logout} icon={faRightFromBracket} color='white' size='xl' />
             <span className='nav-label fw-bold text-white translate-middle-y'>Sign Out</span>
           </div>
