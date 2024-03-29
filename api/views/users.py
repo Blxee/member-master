@@ -45,12 +45,10 @@ def sign_in():
     response = make_response()
     response.headers['Content-Type'] = 'application/json'
 
-    result = current_app.auth.login_user(request, response)
-
-    user = current_app.auth.current_user(request).to_dict()
+    user = current_app.auth.login_user(request, response).to_dict()
     del user['password']
 
-    if result == True:
+    if user is not None:
         response.status_code = 200
         response.data = jsonify({
             'status': 'success',

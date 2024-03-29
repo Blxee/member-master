@@ -38,7 +38,8 @@ class User(Base):
     def get_owned_businesses(self):
         """Get all businesses owned by current user."""
         from api.models.business import Business
-        cursor = current_app.mysql_client.cursor()
+        conn = current_app.mysql_client.get_connection()
+        cursor = conn.cursor()
         cursor.execute(
             f"""
             SELECT businesses.* FROM businesses
@@ -58,4 +59,5 @@ class User(Base):
             users.append(instance)
 
         cursor.close()
+        conn.close()
         return users

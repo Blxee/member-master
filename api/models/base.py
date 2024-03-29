@@ -48,7 +48,8 @@ class Base:
         # zip is important for maintaining order
         keys, values = tuple(zip(*dic.items()))
 
-        cursor = current_app.mysql_client.cursor()
+        conn = current_app.mysql_client.get_connection()
+        cursor = conn.cursor()
         cursor.execute(
             f"""
             REPLACE INTO {self.table_name} ({','.join(keys)})
@@ -58,23 +59,27 @@ class Base:
         )
         self.id = cursor.lastrowid
         cursor.close()
-        current_app.mysql_client.commit()
+        conn.commit()
+        conn.close()
         return True
 
     def delete(self):
         """Deletes the current instance from the database."""
-        cursor = current_app.mysql_client.cursor()
+        conn = current_app.mysql_client.get_connection()
+        cursor = conn.cursor()
         cursor.execute(
             f"""DELETE FROM {self.table_name} WHERE id = %s""",
             (self.id,),
         )
         cursor.close()
-        current_app.mysql_client.commit()
+        conn.commit()
+        conn.close()
 
     @classmethod
     def all(cls):
         """Fetches all instances of a class."""
-        cursor = current_app.mysql_client.cursor()
+        conn = current_app.mysql_client.get_connection()
+        cursor = conn.cursor()
         cursor.execute(f"""SELECT * FROM {cls.table_name}""")
 
         models = []
@@ -88,6 +93,7 @@ class Base:
             models.append(instance)
 
         cursor.close()
+        conn.close()
         return models
 
     @classmethod
@@ -103,7 +109,8 @@ class Base:
         if not set(keys).issubset(set(cls.fields)):
             return None
 
-        cursor = current_app.mysql_client.cursor()
+        conn = current_app.mysql_client.get_connection()
+        cursor = conn.cursor()
         query_fields = ','.join(keys)
         query_search = ('%s,' * len(values))[:-1]
         cursor.execute(
@@ -124,4 +131,5 @@ class Base:
             models.append(instance)
 
         cursor.close()
+        conn.close()
         return models

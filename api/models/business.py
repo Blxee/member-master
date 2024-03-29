@@ -11,7 +11,8 @@ class Business(Base):
     def get_clients(self):
         """Get all clients subscribed to this business."""
         from api.models.user import User
-        cursor = current_app.mysql_client.cursor()
+        conn = current_app.mysql_client.get_connection()
+        cursor = conn.cursor()
         cursor.execute(
             f"""
             SELECT users.*        FROM users
@@ -32,4 +33,5 @@ class Business(Base):
             users.append(instance)
 
         cursor.close()
+        conn.close()
         return users

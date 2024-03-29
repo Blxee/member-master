@@ -25,33 +25,33 @@ class TokenAuth(Auth):
         if user_id:
             return user_id.decode('utf-8')
 
-    def login_user(self, request: Request, respose: Response) -> bool | None:
+    def login_user(self, request: Request, respose: Response) -> User | None:
         """
         Caches a new auth token for the provided user (as json),
         and sets a token cookie.
 
         Returns:
-            bool: whether the operation succeeds or not.
+            User | None: whether the operation succeeds or not.
         """
         body = request.get_json()
         email = body.get('email')
         password = body.get('password')
         if email is None or password is None:
-            return False
+            return None
 
         users = User.search(email=email)
         if not users:
-            return False
+            return None
 
         user = users[0]
         if not user.is_password_valid(password):
-            return False
+            return None
 
         token = str(uuid4())
         expiry = 60 * 60 * 24 * 7
         current_app.redis_client.setex(f'auth_{token}', expiry, user.id)
         respose.set_cookie('X-Token', token)
-        return True
+        return user
 
     def logout_user(self, request: Request, respose: Response) -> bool:
         """

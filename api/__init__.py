@@ -21,7 +21,9 @@ def create_app(test_config=None):
         host=app.config['REDIS_HOST'],
         port=app.config['REDIS_PORT'],
     )
-    app.mysql_client = mysql.connector.connect(
+    app.mysql_client = mysql.connector.pooling.MySQLConnectionPool(
+        pool_name='main_pool',
+        pool_size=5,
         host=app.config['DB_HOST'],
         user=app.config['DB_USER'],
         password=app.config['DB_PASSWORD'],
