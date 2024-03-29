@@ -1,6 +1,4 @@
 import { Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap';
 import './App.css';
 import Home from './pages/Home';
 import SignUp from './pages/SignUp';
@@ -40,7 +38,7 @@ export const UserContext = createContext();
 
 
 function App() {
-  const [userId, setUserId] = useState(null);
+  const [user, setUser] = useState(null);
   const [alert, setAlert] = useState(null);
   const [alertVisible, setAlertVisible] = useState(true);
 
@@ -50,20 +48,22 @@ function App() {
     setAlert(<Alert type={type} show={alertVisible}>{content}</Alert>);
   };
 
-  useEffect(() => {
-    fetch('http://localhost:5000/api/users/current', {
-      method: 'GET',
-      mode: 'cors',
-      credentials: 'include',
-    }).then((res) => {
-      if (res.ok) {
-        res.json().then((json) => setUserId(json));
-      }
-    });
-  }, []);
+  useEffect((user) => {
+    if (user == null) {
+      fetch('http://localhost:5000/api/users/current', {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'include',
+      }).then((res) => {
+        if (res.ok) {
+          res.json().then((json) => setUser(json));
+        }
+      });
+    }
+  }, [alert]);
 
   return (
-    <UserContext.Provider value={{ userId, setUserId, pushAlert }}>
+    <UserContext.Provider value={{ user, setUser, pushAlert }}>
       <RouterProvider router={router} fallbackElement={<h1>loading</h1>} />
       {alert}
     </UserContext.Provider>

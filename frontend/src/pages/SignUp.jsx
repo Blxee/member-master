@@ -3,11 +3,11 @@ import { UserContext } from "../App";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function SignUp() {
-  const { userId, pushAlert } = useContext(UserContext);
+  const { user, pushAlert } = useContext(UserContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (userId) {
+    if (user) {
       navigate('/');
     }
   });
@@ -18,19 +18,21 @@ export default function SignUp() {
     const data = {};
     formData.forEach((value, key) => data[key] = value );
 
-    fetch('http://localhost:5000/api/users/sign-up', {
-      method: 'POST',
-      mode: 'cors',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    }).then((res) => {
-      if (res.ok) {
-        console.log('Signed up successfully!');
-        pushAlert('Welcome to MemberMaster!', 'primary')
-        navigate('/')
-      }
-    });
+    if (user == null) {
+      fetch('http://localhost:5000/api/users/sign-up', {
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }).then((res) => {
+        if (res.ok) {
+          console.log('Signed up successfully!');
+          pushAlert('Welcome to MemberMaster!', 'primary')
+          navigate('/')
+        }
+      });
+    }
   };
 
   return (
@@ -53,7 +55,7 @@ export default function SignUp() {
 
       <input className="btn btn-primary bg-gradient w-25 align-self-center" type='submit' />
 
-      <div className="align-self-end">already have an account? <Link to='/sign-in'>Sign In</Link>!</div>
+      <div className="align-self-end text-muted">already have an account? <Link to='/sign-in'>Sign In</Link>!</div>
     </form>
   )
 }

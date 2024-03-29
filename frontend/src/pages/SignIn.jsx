@@ -3,11 +3,11 @@ import { UserContext } from "../App";
 import { useContext, useEffect } from "react";
 
 export default function SignIn() {
-  const { userId, setUserId, pushAlert } = useContext(UserContext);
+  const { user, setUser, pushAlert } = useContext(UserContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (userId) {
+    if (user) {
       navigate('/');
     }
   });
@@ -18,20 +18,23 @@ export default function SignIn() {
     const data = {};
     formData.forEach((value, key) => data[key] = value );
 
-    fetch('http://localhost:5000/api/users/sign-in', {
-      method: 'POST',
-      mode: 'cors',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    }).then((res) => {
-      if (res.ok) {
-        res.json().then((json) => setUserId(json.id));
-        console.log('Signed in successfully!');
-        pushAlert('Welcome back!', 'primary')
-        navigate('/')
-      }
-    });
+    if (user == null) {
+      fetch('http://localhost:5000/api/users/sign-in', {
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      }).then((res) => {
+        if (res.ok) {
+          res.json().then((json) => setUser(json.id));
+          console.log('Signed in successfully!');
+          pushAlert('Welcome back!', 'primary');
+          event.target.reset();
+          navigate('/');
+        }
+      });
+    }
   };
 
   return (
@@ -46,7 +49,7 @@ export default function SignIn() {
 
       <input className="btn btn-primary bg-gradient w-25 align-self-center" type='submit' />
 
-      <div className="align-self-end">need an account? <Link to='/sign-up'>Sign Up</Link>!</div>
+      <div className="align-self-end text-muted">need an account? <Link to='/sign-up'>Sign Up</Link>!</div>
     </form>
   )
 }
