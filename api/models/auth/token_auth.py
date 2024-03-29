@@ -13,7 +13,7 @@ class TokenAuth(Auth):
 
     def get_token(self, request: Request) -> str | None:
         """Returns the token header value from the request or None."""
-        return request.headers.get('X-Token')
+        return request.cookies.get('X-Token')
 
     def get_user_id(self, request: Request) -> str | None:
         """Returns the user id cached in redis if exists of None"""
@@ -37,10 +37,14 @@ class TokenAuth(Auth):
         email = body.get('email')
         password = body.get('password')
         if email is None or password is None:
-            return
+            return False
 
-        user = User.search(email=email)[0] # TODO: handle user not exists
-        if user is None or not user.is_password_valid(password):
+        users = User.search(email=email)
+        if not users:
+            return False
+
+        user = users[0]
+        if not user.is_password_valid(password):
             return False
 
         token = str(uuid4())

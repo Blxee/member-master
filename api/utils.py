@@ -12,6 +12,6 @@ def require_auth(fun):
             return jsonify({
                 'status': 'error',
                 'message': 'user could not be authorized',
-            }), 402
+            }), 403
         return fun(*args, **kwargs)
     return inner

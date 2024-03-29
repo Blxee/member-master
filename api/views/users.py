@@ -47,11 +47,15 @@ def sign_in():
 
     result = current_app.auth.login_user(request, response)
 
+    user = current_app.auth.current_user(request).to_dict()
+    del user['password']
+
     if result == True:
         response.status_code = 200
         response.data = jsonify({
             'status': 'success',
             'message': 'user signed in successfully',
+            'user': user,
         }).data
     else:
         response.status_code = 401
@@ -84,12 +88,16 @@ def sign_out():
 def get_user(user_id):
     """Retrieve a specific user."""
     user = User.search(id=user_id)
+
     if not user:
         return jsonify({
             'status': 'error',
             'message': 'no such user exists',
         }), 400
-    user = user[0].to_dict() # TODO: don't send hash_pwd
+
+    user = user[0].to_dict()
+    del user['password']
+
     return jsonify(user), 200
 
 
@@ -103,5 +111,27 @@ def current_user():
             'status': 'error',
             'message': 'no such user exists',
         }), 400
-    user = user[0].to_dict() # TODO: don't send hash_pwd
+
+    user = user.to_dict()
+    del user['password']
+
     return jsonify(user), 200
+
+
+@users_routes.route('/<user_id>/businesses', methods=['GET'], strict_slashes=False)
+@require_auth
+def user_businesses(user_id):
+    """Retrieve a user's owned businesses using user_id"""
+    users = User.search(id=user_id)
+
+    if not users:
+        return jsonify({
+            'status': 'error',
+            'message': 'no such user exists',
+        }), 400
+
+    user = users[0]
+    businesses = user.get_owned_businesses()
+    businesses = list(map(lambda b: b.to_dict(), businesses))
+
+    return jsonify(businesses), 200

@@ -12,7 +12,8 @@ import mysql.connector
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
-    CORS(app)
+    CORS(app, supports_credentials=True)
+    # CORS(app, supports_credentials=True, resources={r"/api/*": {"origins": "http://localhost:5173"}})
 
     app.config.from_pyfile(os.path.join(app.instance_path, 'config.py')) # handle this config file
 
