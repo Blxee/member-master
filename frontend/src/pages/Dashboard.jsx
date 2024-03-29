@@ -1,32 +1,42 @@
+import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../App';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 export default function Dashboard() {
-  const { user, setUser } = useContext(UserContext);
+  const [businesses, setBusinesses] = useState([]);
+  const [selectedBusiness, setSelectedBusiness] = useState(null);
+  const { user } = useContext(UserContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/users/current', {
-      method: 'GET',
-      mode: 'cors',
-      credentials: 'include',
-    }).then((res) => {
-      if (res.ok) {
-        res.json().then((json) => setUser(json));
-      }
-    });
-  }, []);
+    // if the user is not logged in, redirect to '/'
+    if (user == null) {
+      navigate('/')
+    } else {
+      fetch(`http://localhost:5000/api/users/${user.id}/businesses`, {
+        method: 'GET',
+        mode: 'cors',
+        credentials: 'include',
+      }).then((res) => {
+        if (res.ok) {
+          res.json().then((json) => {
+            setBusinesses(json);
+            setSelectedBusiness(json[0]);
+          });
+        }
+      });
+    }
+  }, [user]);
 
   return (
     <div className='w-100 h-auto d-flex flex-row'>
-
       <div className='dropdown'>
-        <button className='btn btn-lg btn-secondary dropdown-toggle' type='button' data-bs-toggle='dropdown' aria-expanded='false'>hello drop</button>
+        <button className='btn btn-lg btn-secondary dropdown-toggle' type='button' data-bs-toggle='dropdown' aria-expanded='false'>{selectedBusiness?.name || 'Select a business'}</button>
 
         <ul className='dropdown-menu'>
-          <li><div className='dropdown-item'>first item</div></li>
-          <li><div className='dropdown-item'>second item</div></li>
-          <li><hr className='dropdown-divider' /></li>
-          <li><div className='dropdown-item'>third item</div></li>
+          {businesses.map(({ name }) => {
+            return <li key={name}><div className='dropdown-item'>{ name }</div></li>;
+          })}
         </ul>
       </div>
 

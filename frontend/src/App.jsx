@@ -60,7 +60,7 @@ function App() {
         }
       });
     }
-  }, [alert]);
+  }, [alert]); // TODO: what is this??
 
   return (
     <UserContext.Provider value={{ user, setUser, pushAlert }}>

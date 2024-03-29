@@ -27,9 +27,8 @@ export default function SignIn() {
         body: JSON.stringify(data),
       }).then((res) => {
         if (res.ok) {
-          res.json().then((json) => setUser(json.id));
-          console.log('Signed in successfully!');
-          pushAlert('Welcome back!', 'primary');
+          res.json().then((json) => setUser(json));
+          pushAlert('Welcome back !', 'primary');
           event.target.reset();
           navigate('/');
         }
