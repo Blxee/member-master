@@ -72,6 +72,7 @@ def sign_out():
     response.headers['Content-Type'] = 'application/json'
 
     result = current_app.auth.logout_user(request, response)
+    current_app.auth_user = None
 
     response.status_code = 200
     response.data = jsonify({
@@ -103,7 +104,7 @@ def get_user(user_id):
 @require_auth
 def current_user():
     """Retrieve the current authenticated user."""
-    user = current_app.auth.current_user(request)
+    user = current_app.auth_user
     if not user:
         return jsonify({
             'status': 'error',

@@ -6,7 +6,7 @@ from api.models.base import Base
 class Business(Base):
     """Business class represents a business owned by a User"""
     table_name = 'businesses'
-    fields = (*Base.fields, 'name', 'logo', 'owner_id') # == (id, name, logo, owner_id)
+    fields = (*Base.fields, 'name', 'owner_id', 'description', 'logo', 'address') # == (id, name, owner_id, description, logo, address)
 
     def get_clients(self):
         """Get all clients subscribed to this business."""

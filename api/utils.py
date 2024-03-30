@@ -8,6 +8,7 @@ def require_auth(fun):
     @wraps(fun)
     def inner(*args, **kwargs):
         auth_user = current_app.auth.current_user(request)
+        current_app.auth_user = auth_user
         if auth_user is None:
             return jsonify({
                 'status': 'error',

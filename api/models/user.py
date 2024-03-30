@@ -61,3 +61,7 @@ class User(Base):
         cursor.close()
         conn.close()
         return users
+    
+    def get_media_dir(self):
+        """Returns the media path dir for this user, or creates it."""
+        pass

@@ -29,6 +29,7 @@ def create_app(test_config=None):
         password=app.config['DB_PASSWORD'],
         database=app.config['DB_NAME'],
     )
+    app.auth_user = None
 
     if app.config['AUTH_TYPE'] == 'auth':
         app.auth = Auth()
