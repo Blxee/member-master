@@ -6,8 +6,21 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 
 function AddBusinessModal() {
+  const { user, setUser, pushAlert } = useContext(UserContext);
   const submitForm = (event) => {
-    alert('creating business')
+    const data = new FormData(event.target);
+
+    fetch('http://localhost:5000/api/businesses/add', {
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: data,
+    }).then((res) => res.json())
+      .then(({status, message}) => {
+        pushAlert(message, status);
+      })
+      .catch((err) => pushAlert(err, 'danger'))
   };
 
   return (
@@ -20,11 +33,17 @@ function AddBusinessModal() {
           </div>
           <div className='modal-body'>
             <form id='addBusinessForm' onSubmit={submitForm} className="d-flex flex-column gap-3 align-items-start">
-              <label className="form-label mb-0">Email Address:</label>
-              <input className="form-control" name='name' type='text' placeholder='Name' required />
+              <label className="form-label mb-0">Name:</label>
+              <input className="form-control" name='name' type='text' placeholder='Name' maxLength={128} required />
 
-              <label className="form-label mb-0">Password:</label>
-              <input className="form-control" name='password' type='password' placeholder='Password' required />
+              <label className="form-label mb-0">Description:</label>
+              <input className="form-control" name='description' type='text' placeholder='Description' maxLength={256} required />
+
+              <label className="form-label mb-0">Logo:</label>
+              <input className="form-control" name='logo' type='file' accept='image/*' />
+
+              <label className="form-label mb-0">Address:</label>
+              <input className="form-control" name='address' type='text' placeholder='Address' maxLength={256} />
             </form>
           </div>
           <div className='modal-footer'>
