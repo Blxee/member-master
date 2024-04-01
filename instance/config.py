@@ -8,4 +8,4 @@ DB_NAME = 'membermaster_dev'
 
 AUTH_TYPE = 'token-auth'
 
-MEDIA_ROOT = './media/'
+MEDIA_ROOT = 'media/'

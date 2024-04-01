@@ -16,8 +16,8 @@ class Business(Base):
         cursor.execute(
             f"""
             SELECT users.*        FROM users
-            JOIN business_clients ON users.id = business_clients.client_id
-            JOIN businesses       ON business_clients.business_id = businesses.id
+            JOIN subscriptions ON users.id = subscriptions.client_id
+            JOIN businesses       ON subscriptions.business_id = businesses.id
             WHERE businesses.id = %s
             """,
             (self.id,))

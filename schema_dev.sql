@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS membermaster_dev.businesses (
 );
 
 -- subscription: many to many relationship between a client and a business
-CREATE TABLE IF NOT EXISTS membermaster_dev.subscription (
+CREATE TABLE IF NOT EXISTS membermaster_dev.subscriptions (
   client_id INT,
   business_id INT,
   joined DATE,

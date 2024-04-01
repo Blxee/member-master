@@ -1,4 +1,5 @@
-from flask import Blueprint, current_app, jsonify, send_from_directory
+from os import path
+from flask import Blueprint, current_app, jsonify, send_file, send_from_directory
 
 
 index_routes = Blueprint('index', __name__)
@@ -10,6 +11,6 @@ def status():
 
 
 @index_routes.route('/media/<path:file_path>', methods=['GET'], strict_slashes=False)
-def media(file_path):
-    # TODO: fix directory traversal exploit
+def media(file_path: str):
+    print(file_path)
     return send_from_directory(current_app.config['MEDIA_ROOT'], file_path)

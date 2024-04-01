@@ -1,6 +1,7 @@
 """Module defining Business class related routes."""
 from os import path
 from flask import Blueprint, current_app, jsonify, request
+from werkzeug.utils import secure_filename
 from api.models.business import Business
 from api.utils import require_auth
 from pathlib import Path
@@ -42,7 +43,7 @@ def all_clients(business_id):
             'status': 'error',
             'message': 'no such business exists',
         }), 400
-    business = business[0].to_dict()
+    business = business[0]
     clients = business.get_clients()
     clients = list(map(lambda c: c.to_dict(), clients)) # TODO: make it so hash_pwd is not sent
     return jsonify(clients), 200
@@ -72,9 +73,9 @@ def add_business():
     image_file = request.files.get('logo')
     if image_file is not None and image_file.filename is not None:
         # TODO: make logo extention match the uploaded
-        file_path = path.join(business.get_media_path(), image_file.filename)
-        image_file.save(path.join(current_app.config['MEDIA_ROOT'], file_path))
-        business.logo = file_path
+        file_path = path.join(business.get_media_path(), secure_filename(image_file.filename))
+        image_file.save(path.join('api', current_app.config['MEDIA_ROOT'], file_path))
+        business.logo = path.join('/media', file_path)
 
     business.save()
 
