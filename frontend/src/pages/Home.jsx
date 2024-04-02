@@ -91,37 +91,37 @@ function Feature1() {
 function Feature2() {
 
   return (
-    <section className='card shadow px-0 py-3 rounded-4 w-100 h-100'>
+    <section className='card shadow px-0 py-3 rounded-4 w-100 h-100 overflow-hidden'>
 
-      <h1 className='d-flex flex-column w-100 flex-grow-1 mx-0 justify-content-center text-center'>Designed with convienience in mind</h1>
+      <h1 className='d-flex flex-column w-100 mx-0 py-3 justify-content-center text-center'>Designed with convienience in mind</h1>
 
-      <div className='row w-100 bg-primary flex-grow-1 mx-0 p-5 gap-5'>
-        <div className='card p-3 col rounded-5 justify-content-between'>
-          <img src='/business_automation.png' />
+      <div className='row w-100 flex-grow-1 mx-0 p-5 gap-5' style={{backgroundColor: 'lightgray'}}>
+        <div className='card p-3 col rounded-5 justify-content-between h-100'>
+          <img src='/business_automation.png' className='mx-auto' width='70%' />
           <h4 className='text-center mt-3'>Automated transaction</h4>
           <hr className='border-2' />
           <p>
             clients can subscribe to your business online for convienience.
           </p>
         </div>
-        <div className='card p-3 col rounded-5 justify-content-between'>
-          <img src='/bar_graph.png' />
+        <div className='card p-3 col rounded-5 justify-content-between h-100'>
+          <img src='/bar_graph.png' className='mx-auto' width='70%' />
           <h4 className='text-center mt-3'>Clear and Consice</h4>
           <hr className='border-2' />
           <p>
-            track you business progress with clear graphs and various tools.
+            track your business progress with clear graphs and various tools.
           </p>
         </div>
-        <div className='card p-3 col rounded-5 justify-content-between'>
-          <img src='/folder_gear.png' />
+        <div className='card p-3 col rounded-5 justify-content-between h-100'>
+          <img src='/folder_gear.png' className='mx-auto' width='70%' />
           <h4 className='text-center mt-3'>Never Lose Data</h4>
           <hr className='border-2' />
           <p>
             with everything stored in the cloud and managed by you, say goodbye to data losses.
           </p>
         </div>
-        <div className='card p-3 col rounded-5 justify-content-between'>
-          <img src='/website_layout.png' />
+        <div className='card p-3 col rounded-5 justify-content-between h-100'>
+          <img src='/website_layout.png' className='mx-auto' width='70%' />
           <h4 className='text-center mt-3'>Easy Layout</h4>
           <hr className='border-2' />
           <p>
@@ -129,8 +129,6 @@ function Feature2() {
           </p>
         </div>
       </div>
-
-      <div className='row w-100 flex-grow-1 mx-0'></div>
 
     </section>
   )

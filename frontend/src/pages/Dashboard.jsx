@@ -6,15 +6,17 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 
 function AddBusinessModal() {
-  const { user, setUser, pushAlert } = useContext(UserContext);
+  const { pushAlert } = useContext(UserContext);
+
   const submitForm = (event) => {
+    event.preventDefault();
     const data = new FormData(event.target);
 
     fetch('http://localhost:5000/api/businesses/add', {
       method: 'POST',
       mode: 'cors',
       credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
+      // headers: { 'Content-Type': 'application/json' },
       body: data,
     }).then((res) => res.json())
       .then(({status, message}) => {
@@ -60,6 +62,8 @@ function AddBusinessModal() {
 export default function Dashboard() {
   const [businesses, setBusinesses] = useState([]);
   const [selectedBusiness, setSelectedBusiness] = useState(null);
+  const [clients, setClients] = useState([]);
+
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
@@ -74,12 +78,27 @@ export default function Dashboard() {
         credentials: 'include',
       }).then((res) => {
         if (res.ok) {
-          res.json().then((json) => {
-            setBusinesses(json);
-            setSelectedBusiness(json[0]);
+          res.json().then((business) => {
+
+            setBusinesses(business);
+            setSelectedBusiness(business[0]);
+
+            fetch(`http://localhost:5000/api/businesses/${business[0].id}/clients/all`, {
+              method: 'GET',
+              mode: 'cors',
+              credentials: 'include',
+            }).then((res) => {
+              if (res.ok) {
+                res.json().then((clients) => {
+                  setClients(clients);
+                });
+              }
+            });
+
           });
         }
       });
+
     }
   }, [user]);
 
@@ -109,11 +128,35 @@ export default function Dashboard() {
       <hr className='border-2 rounded' />
 
       <div className='row'>
+        <img src={'http://localhost:5000' + selectedBusiness?.logo} />
         <h1>id: {selectedBusiness?.id}</h1>
         <h1>name: {selectedBusiness?.name}</h1>
         <h1>logo: {selectedBusiness?.logo}</h1>
         <h1>owner id: {selectedBusiness?.owner_id}</h1>
       </div>
+
+
+      <h3>Clients:</h3>
+      <table className='table table-striped rounded-3 overflow-hidden'>
+        <thead>
+          <tr>
+            <th>id</th>
+            <th>email</th>
+            <th>password</th>
+          </tr>
+        </thead>
+        <tbody>
+          { clients.map(({ id, email, password }) => {
+            return (
+              <tr key={id}>
+                <td>{id}</td>
+                <td>{email}</td>
+                <td>{password}</td>
+              </tr>
+            )
+          }) }
+        </tbody>
+      </table>
 
       <button
         type='button'
