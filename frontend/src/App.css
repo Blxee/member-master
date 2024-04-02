@@ -1,5 +1,7 @@
 #main-container {
   width: 100%;
   min-height: 100svh;
-  background-color: #D6DAC8;
+  /* background-color: #D6DAC8; */
+  background: url('/background.svg') no-repeat center;
+  background-size: cover;
 }

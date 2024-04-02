@@ -38,6 +38,8 @@ export default function SignIn() {
 
   return (
     <form onSubmit={submitForm} className="card rounded-4 shadow container w-50 p-4 gap-3 my-auto">
+      <img className='position-absolute top-0 end-0 m-4' width='10%' srcSet='/membermaster-gray.svg' alt='MemberMaster logo' />
+
       <legend>Sign In to your account!</legend>
 
       <label className="form-label">Email Address:</label>
