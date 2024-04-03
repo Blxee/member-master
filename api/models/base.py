@@ -103,7 +103,7 @@ class Base:
         pass
 
     @classmethod
-    def search(cls, **kwargs):
+    def search(cls, **kwargs) -> list:
         """Filter search throught db and return instances as list."""
         keys, values = tuple(zip(*kwargs.items()))
 

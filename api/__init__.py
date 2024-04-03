@@ -4,6 +4,7 @@ from flask_cors import CORS
 from api.views.users import users_routes
 from api.views.index import index_routes
 from api.views.businesses import businesses_routes
+from api.views.subscriptions import subscriptions_routes
 from api.models.auth.auth import Auth
 from api.models.auth.basic_auth import BasicAuth
 from api.models.auth.token_auth import TokenAuth
@@ -41,5 +42,6 @@ def create_app(test_config=None):
     app.register_blueprint(users_routes)
     app.register_blueprint(index_routes)
     app.register_blueprint(businesses_routes)
+    app.register_blueprint(subscriptions_routes)
 
     return app
