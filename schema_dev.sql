@@ -6,6 +6,10 @@ CREATE TABLE IF NOT EXISTS membermaster_dev.users (
   id INT NOT NULL AUTO_INCREMENT,
   email VARCHAR(128),
   password VARCHAR(128),
+  -- first_name VARCHAR(64),
+  -- last_name VARCHAR(64),
+  -- picture VARCHAR(128),
+  -- phone VARCHAR(64),
   PRIMARY KEY(id)
 );
 
@@ -22,14 +26,20 @@ CREATE TABLE IF NOT EXISTS membermaster_dev.businesses (
 
 -- subscription: many to many relationship between a client and a business
 CREATE TABLE IF NOT EXISTS membermaster_dev.subscriptions (
-  client_id INT,
-  business_id INT,
+  business_id INT NOT NULL,
+  client_id INT NOT NULL AUTO_INCREMENT, --this is only for quick deployment
+  first_name VARCHAR(64),
+  last_name VARCHAR(64),
+  picture VARCHAR(128),
+  email VARCHAR(64),
+  phone VARCHAR(64),
+  documents_dir VARCHAR(128),
   joined DATE,
   last_paid DATE,
-  assurance DATE,
-  PRIMARY KEY(client_id, business_id),
-  FOREIGN KEY(client_id) REFERENCES membermaster_dev.users(id) ON DELETE CASCADE,
+  assurance BOOLEAN,
+  PRIMARY KEY(business_id, client_id),
   FOREIGN KEY(business_id) REFERENCES membermaster_dev.businesses(id) ON DELETE CASCADE
+  FOREIGN KEY(client_id) REFERENCES membermaster_dev.users(id) ON DELETE CASCADE,
 );
 
 GRANT ALL PRIVILEGES ON membermaster_dev.* TO 'mm_user_dev'@'%';
