@@ -19,7 +19,7 @@ function Heading() {
             Seamlessly manage memberships and track client accounts hassle-free.
           </p>
 
-          <hr/>
+          <hr className='border-3'/>
 
           <div className='d-flex flex-row justify-content-between'>
             { user
