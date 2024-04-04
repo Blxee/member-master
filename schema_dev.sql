@@ -26,8 +26,9 @@ CREATE TABLE IF NOT EXISTS membermaster_dev.businesses (
 
 -- subscription: many to many relationship between a client and a business
 CREATE TABLE IF NOT EXISTS membermaster_dev.subscriptions (
+  id INT NOT NULL AUTO_INCREMENT,
   business_id INT NOT NULL,
-  client_id INT NOT NULL AUTO_INCREMENT,
+  client_id INT NOT NULL,
   first_name VARCHAR(64),
   last_name VARCHAR(64),
   picture VARCHAR(128),
@@ -37,7 +38,7 @@ CREATE TABLE IF NOT EXISTS membermaster_dev.subscriptions (
   joined DATE,
   last_paid DATE,
   assurance BOOLEAN,
-  PRIMARY KEY(business_id, client_id),
+  PRIMARY KEY(id, business_id, client_id),
   FOREIGN KEY(business_id) REFERENCES membermaster_dev.businesses(id) ON DELETE CASCADE,
   FOREIGN KEY(client_id) REFERENCES membermaster_dev.users(id) ON DELETE CASCADE
 );
