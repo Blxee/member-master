@@ -17,7 +17,7 @@ export default function Nav() {
     }).then((res) => {
       if (res.ok) {
         setUser(null);
-        pushAlert('hello', 'success')
+        pushAlert('you have been successfully logged out', 'success')
         console.log('Signed out successfully!');
         navigate('/')
       }

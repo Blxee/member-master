@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../App';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCancel, faCheck, faCoins, faPen, faPlus, faTrash, faUser, faX } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown, faAngleUp, faCancel, faCheck, faCoins, faImage, faPen, faPlus, faTrash, faUser, faX } from '@fortawesome/free-solid-svg-icons';
 
 
 function AddBusinessModal() {
@@ -89,39 +89,44 @@ function AddClientModal({ businessId }) {
             <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
           </div>
           <div className='modal-body'>
-            <form onSubmit={submitForm} id='addClientForm' className="container w-100 p-4 mx-auto my-3">
-              <label className="form-label mb-0">Picture:</label>
-              <input className="form-control" name='picture' type='file' accept='image/*' />
+            <form onSubmit={submitForm} id='addClientForm' className="container-fluid">
+              <div className='container-fluid d-flex flex-column justify-content-between align-items-start gap-3'>
 
-              <div className='container-fluid'>
-                <div className='row row-cols-2'>
-                  <div className='col'>
-                    <label className='form-label'>First Name:</label>
-                    <input className='form-control' placeholder='First Name' type='text' name='first_name' maxLength={64} required />
-                  </div>
-                  <div className='col'>
-                    <label className='form-label'>Last Name:</label>
-                    <input className='form-control' placeholder='Last Name' type='text' name='last_name' maxLength={64} required />
+                <div className='container-fluid'>
+                  <div className='row row-cols-2'>
+                    <div className='col'>
+                      <label className='form-label'>First Name:</label>
+                      <input className='form-control' placeholder='First Name' type='text' name='first_name' maxLength={64} required />
+                    </div>
+                    <div className='col'>
+                      <label className='form-label'>Last Name:</label>
+                      <input className='form-control' placeholder='Last Name' type='text' name='last_name' maxLength={64} required />
+                    </div>
                   </div>
                 </div>
+
+                <label className="form-label">Picture:</label>
+                <input className="form-control" name='picture' type='file' accept='image/*' />
+
+                <label className="form-label">Email Address:</label>
+                <input className="form-control" name='email' type='email' placeholder='Email' maxLength={128} />
+
+                <label className="form-label">Phone Number:</label>
+                <input className="form-control" name='phone' type='tel' placeholder='Phone' maxLength={64} />
+
               </div>
 
-              <label className="form-label">Email Address:</label>
-              <input className="form-control" name='email' type='email' placeholder='Email' maxLength={128} />
+              <div className='container-fluid d-flex flex-column justify-content-between align-items-start gap-3'>
 
-              <label className="form-label">Phone Number:</label>
-              <input className="form-control" name='phone' type='tel' placeholder='Phone' maxLength={64} />
+                <div className='form-check w-100 d-flex flex-row p-0 my-3'>
+                  <label className="form-check-label me-auto">Assurance:</label>
+                  <input className="form-check-input border-black ms-auto me-3" name='assurance' type='checkbox' />
+                </div>
 
-              <label className="form-label">Joined At:</label>
-              <input className="form-control" name='joined' type='date' defaultValue={new Date().toISOString().slice(0, 10)} />
+                <label className="form-label">Joined At:</label>
+                <input className="form-control" name='joined' type='date' defaultValue={new Date().toISOString().slice(0, 10)} />
 
-              <div className='form-check w-100 d-flex flex-row p-0 my-3'>
-                <label className="form-check-label me-auto">Assurance:</label>
-                <input className="form-check-input border-black ms-auto me-3" name='assurance' type='checkbox' />
               </div>
-
-              <label className="form-label mb-0">Documents:</label>
-              <input className="form-control" name='files[]' type='file' multiple/>
 
             </form>
           </div>
@@ -163,6 +168,10 @@ function UserInfo({ client }) {
       }
     });
 
+    const input = form.querySelector('[name="picture"]');
+
+    formData.append('picture', input.files[0])
+
     if (client != null) {
       fetch(`http://localhost:5000/api/subs/update/${client.id}`, {
         method: 'POST',
@@ -172,6 +181,7 @@ function UserInfo({ client }) {
       }).then((res) => {
         res.json().then((res) => {
           pushAlert(res.message, res.status);
+          setIsEditing(false);
         });
       }).catch((err) => pushAlert(err.message));
     }
@@ -214,48 +224,72 @@ function UserInfo({ client }) {
 
   return (
     <form ref={formRef} onSubmit={updateClient} className="card rounded-4 bg-light shadow container w-100 p-4 mx-auto my-3">
-      <legend>User Profile</legend>
+      <legend>{`${client?.first_name || 'User'}'s Profile`}</legend>
 
-      <fieldset className='container-fluid d-flex flex-column align-items-start gap-3' disabled={!isEditing}>
-        <img src={'http://localhost:5000' + client?.picture} />
-        <label className="form-label mb-0">Picture:</label>
-        <input className="form-control" name='picture' type='file' accept='image/*' hidden={!isEditing} />
+      <fieldset className='container-fluid d-flex flex-row align-items-stretch' disabled={!isEditing}>
+        <div className='container-fluid d-flex flex-column justify-content-between align-items-start gap-3'>
 
-        <div className='container-fluid'>
-          <div className='row row-cols-2'>
-            <div className='col'>
-              <label className='form-label'>First Name:</label>
-              <input className='form-control' placeholder='First Name' type='text' name='first_name' defaultValue={client?.first_name} maxLength={64} required />
+          <div className='w-100 d-flex flex-row justify-content-between align-items-stretch p-0 my-3'>
+            <div className='d-flex flex-column justify-content-evenly w-50'>
+              <label className="form-label">Picture:</label>
+              <input className='form-control' type='text' defaultValue={client?.picture || 'N/A'} maxLength={128} disabled />
+              <input className="form-control" name='picture' type='file' accept='image/*' hidden={!isEditing} />
             </div>
-            <div className='col'>
-              <label className='form-label'>Last Name:</label>
-              <input className='form-control' placeholder='Last Name' type='text' name='last_name' defaultValue={client?.last_name} maxLength={64} required />
+            { client?.picture
+              ? <img className='rounded-4' style={{width: '10em', aspectRatio: '1/1'}}  src={'http://localhost:5000' + client.picture} />
+              : <FontAwesomeIcon icon={faUser} size='10x' />
+            }
+          </div>
+
+          <div className='container-fluid'>
+            <div className='row row-cols-2'>
+              <div className='col'>
+                <label className='form-label'>First Name:</label>
+                <input className='form-control' placeholder='First Name' type='text' name='first_name' defaultValue={client?.first_name} maxLength={64} required />
+              </div>
+              <div className='col'>
+                <label className='form-label'>Last Name:</label>
+                <input className='form-control' placeholder='Last Name' type='text' name='last_name' defaultValue={client?.last_name} maxLength={64} required />
+              </div>
             </div>
           </div>
+
+          <label className="form-label">Email Address:</label>
+          <input className="form-control" name='email' type='email' placeholder='Email' defaultValue={client?.email} maxLength={128} />
+
+          <label className="form-label">Phone Number:</label>
+          <input className="form-control" name='phone' type='tel' placeholder='Phone' defaultValue={client?.phone} maxLength={64} />
+
         </div>
 
-        <label className="form-label">Email Address:</label>
-        <input className="form-control" name='email' type='email' placeholder='Email' defaultValue={client.email} maxLength={128} />
+        <div className='vr mx-3' />
+        <div className='container-fluid d-flex flex-column justify-content-between align-items-start gap-3'>
 
-        <label className="form-label">Phone Number:</label>
-        <input className="form-control" name='phone' type='tel' placeholder='Phone' defaultValue={client.phone} maxLength={64} />
+          <div className='form-check w-100 d-flex flex-row p-0 my-3'>
+            <label className="form-check-label me-auto">Assurance:</label>
+            <input className="form-check-input border-black ms-auto me-3" name='assurance' type='checkbox' defaultChecked={client?.assurance} />
+          </div>
 
-        <label className="form-label">Joined At:</label>
-        <input className="form-control" name='joined' type='date' defaultValue={client.joined.toISOString().slice(0, 10)} />
+          <label className="form-label">Joined At:</label>
+          <input className="form-control" name='joined' type='date' defaultValue={client.joined.toISOString().slice(0, 10)} />
 
-        <label className="form-label">Last Paid</label>
-        <input className="form-control" name='last_paid' type='date'  defaultValue={client.last_paid.toISOString().slice(0, 10)} />
+          <label className="form-label">Last Paid</label>
+          <input className="form-control" name='last_paid' type='date'  defaultValue={client.last_paid.toISOString().slice(0, 10)} />
 
-        <div className='form-check w-100 d-flex flex-row p-0 my-3'>
-          <label className="form-check-label me-auto">Assurance:</label>
-          <input className="form-check-input border-black ms-auto me-3" name='assurance' type='checkbox' defaultChecked={client?.assurance} />
+          <div className='w-100 d-flex flex-row justify-content-between'>
+            <label className="form-label">Payment:</label>
+            {client.payment < 0
+              ? <FontAwesomeIcon className='me-2' size='xl' color='#CF0000' icon={faAngleDown} />
+              : <FontAwesomeIcon className='me-2' size='xl' color='#7DCE13' icon={client.payment == 0 ? faCheck : faAngleUp} />}
+            {client.payment == 0 ? '' : Math.abs(client.payment)}
+          </div>
+
+          <button type='button' onClick={payMonth} className='btn btn-success w-100 bg-gradient px-4'>
+            <FontAwesomeIcon icon={faCoins} className='me-4' />Pay Month
+          </button>
+
         </div>
-
       </fieldset>
-
-      <button type='button' onClick={payMonth} className='btn btn-success bg-gradient px-4'>
-        <FontAwesomeIcon icon={faCoins} className='me-4' />Pay Month
-      </button>
 
       <div className='container-fluid d-flex flex-row mt-4 mx-2'>
         <button type='button' className={`btn btn-${isEditing ? 'warning' : 'primary'} d-inline bg-gradient px-4`} onClick={toggleEdit}>
@@ -288,7 +322,6 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // if the user is not logged in, redirect to '/'
     if (user == null) {
       navigate('/')
     } else {
@@ -301,31 +334,38 @@ export default function Dashboard() {
           res.json().then((business) => {
 
             setBusinesses(business);
-            setSelectedBusiness(business[0]);
 
-            fetch(`http://localhost:5000/api/subs/business/${business[0].id}`, {
-              method: 'GET',
-              mode: 'cors',
-              credentials: 'include',
-            }).then((res) => {
-              if (res.ok) {
-                res.json().then((clients) => {
-                  clients.forEach((client) => {
-                    client.joined = new Date(client.joined);
-                    client.last_paid = new Date(client.last_paid);
-                    client.assurance = Boolean(client.assurance);
-                  });
-                  setClients(clients);
-                });
-              }
+            setSelectedBusiness((selected) => {
+              if (selected == null && business.length > 0)
+                return business[0];
             });
-
           });
         }
       });
-
     }
   }, [user]);
+
+  useEffect(() => {
+    fetch(`http://localhost:5000/api/subs/business/${selectedBusiness?.id}`, {
+      method: 'GET',
+      mode: 'cors',
+      credentials: 'include',
+    }).then((res) => {
+      if (res.ok) {
+        res.json().then((clients) => {
+          clients.forEach((client) => {
+            client.joined = new Date(client.joined);
+            client.last_paid = new Date(client.last_paid);
+            client.assurance = Boolean(client.assurance);
+            const currentDate = new Date();
+            client.payment = (client.last_paid.getFullYear() * 12 + client.last_paid.getMonth())
+              - (currentDate.getFullYear() * 12 + currentDate.getMonth());
+          });
+          setClients(clients);
+        });
+      }
+    });
+  }, [user, selectedBusiness]);
 
 
   const onSelectBusinessClick = (index) => {
@@ -338,59 +378,54 @@ export default function Dashboard() {
   }
 
   return (
-    <div className='w-100 container-fluid text-center'>
+    <div className='container-fluid p-3'>
       <AddBusinessModal />
       <AddClientModal businessId={selectedBusiness?.id} />
 
-      <div className='row'>
-        <div className='col'>
-          <div className='dropdown'>
-            <img className='rounded-start-4' style={{ aspectRatio: '1/1' }} width='%' src={'http://localhost:5000' + selectedBusiness?.logo} />
+      <div className='container-fluid d-flex align-items-start'>
+        <div className='dropdown me-auto'>
+          { selectedBusiness?.logo
+            ? <img className='rounded-start-4 fs-5' style={{ aspectRatio: '1/1', height: '5em' }} width='%' src={'http://localhost:5000' + selectedBusiness?.logo} />
+            : <span className='bg-success' style={{height: '5em'}}><FontAwesomeIcon icon={faImage} size='5x' /></span>
+          }
 
-            <button className='btn btn-lg rounded-start-0 btn-secondary dropdown-toggle' type='button' data-bs-toggle='dropdown' aria-expanded='false'>
-              {selectedBusiness?.name || 'Select a business'}
-            </button>
+          <button style={{height: '5em'}} className='btn btn-success bg-gradient rounded-start-0 fs-5 rounded-end-4 btn-secondary dropdown-toggle' type='button' data-bs-toggle='dropdown' aria-expanded='false'>
+            {selectedBusiness?.name || 'Select a business'}
+          </button>
 
-            <ul className='dropdown-menu'>
-              {businesses.map(({ name }, index) => {
-                return <li key={name}><div className='dropdown-item' onClick={() => onSelectBusinessClick(index)}>{name}</div></li>;
-              })}
-            </ul>
-          </div>
+          <ul className='dropdown-menu'>
+            {businesses.map(({ name }, index) => {
+              return <li key={name}><div className='dropdown-item' onClick={() => onSelectBusinessClick(index)}>{name}</div></li>;
+            })}
+          </ul>
         </div>
+
+        <button
+          type='button'
+          className='btn btn-primary rounded-4 bg-gradient fs-5 ms-auto'
+          data-bs-toggle='modal'
+          data-bs-target='#addBusinessModal'
+        >
+          <FontAwesomeIcon icon={faPlus} color='white' /> Create New Business
+        </button>
       </div>
 
-      <button
-        type='button'
-        style={{ aspectRatio: '1/1' }}
-        className='btn btn-primary rounded-circle'
-        data-bs-toggle='modal'
-        data-bs-target='#addBusinessModal'
-      >
-        <FontAwesomeIcon
-          icon={faPlus} size='2x' color='white' />
-      </button>
+      <h3 className='mt-5'>Description:</h3>
+      <div className='container fs-5'>{selectedBusiness?.description}</div>
 
-      <div className='row'>
-        <img className='rounded-circle' style={{ aspectRatio: '1/1' }} src={'http://localhost:5000' + selectedBusiness?.logo} />
-        <h1>id: {selectedBusiness?.id}</h1>
-        <h1>name: {selectedBusiness?.name}</h1>
-        <h1>logo: {selectedBusiness?.logo}</h1>
-        <h1>owner id: {selectedBusiness?.owner_id}</h1>
-      </div>
+      <hr className='border-2 rounded mt-5' />
 
-      <hr className='border-2 rounded' />
-
-      <h3>Clients:</h3>
+      <h3 className='mt-5'>Clients:</h3>
       <table className='table table-secondary table-striped table-hover rounded-3 overflow-hidden'>
         <thead>
           <tr>
             <th scope='col' style={{width: '1%'}}></th>
             <th scope='col'>Full Name</th>
             <th scope='col'>Registration</th>
+            <th scope='col'>Payment</th>
             <th scope='col'>Email</th>
             <th scope='col'>Phone</th>
-            <th scope='col'>Assurance</th>
+            <th scope='col' className='text-center'>Assurance</th>
           </tr>
         </thead>
         <tbody>
@@ -399,14 +434,20 @@ export default function Dashboard() {
               <>
                 <tr style={{verticalAlign: 'middle'}} key={client.id} role='button' onClick={centerElement} data-bs-toggle='collapse' data-bs-target={`#tableCollapse${client.id}`}>
                   <td scope='row'>{ client.picture
-                    ? <img className='rounded-3' style={{width: '3em'}} src={'http://localhost:5000' + client.picture} />
+                    ? <img className='rounded-3' style={{width: '3em', aspectRatio: '1/1'}} src={'http://localhost:5000' + client.picture} />
                     : <FontAwesomeIcon icon={faUser} size='3x' />
                   }</td>
                   <td>{`${client.first_name} ${client.last_name}`}</td>
                   <td>{client.joined.toDateString()}</td>
+                  <td>
+                    {client.payment < 0
+                      ? <FontAwesomeIcon className='me-2' size='xl' color='#CF0000' icon={faAngleDown} />
+                      : <FontAwesomeIcon className='me-2' size='xl' color='#7DCE13' icon={client.payment == 0 ? faCheck : faAngleUp} />}
+                    {client.payment == 0 ? '' : Math.abs(client.payment)}
+                  </td>
                   <td>{client.email || <span className='text-danger'>N/A</span>}</td>
                   <td>{client.phone || <span className='text-danger'>N/A</span>}</td>
-                  <td>{client.assurance
+                  <td className='text-center'>{client.assurance
                     ? <FontAwesomeIcon size='xl' color='#7DCE13' icon={faCheck} />
                     : <FontAwesomeIcon size='xl' color='#B80000' icon={faX} />
                   }</td>
