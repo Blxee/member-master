@@ -1,5 +1,5 @@
 from os import path
-from flask import Blueprint, current_app, jsonify, send_file, send_from_directory
+from flask import Blueprint, abort, current_app, jsonify, send_file, send_from_directory
 
 
 index_routes = Blueprint('index', __name__)
@@ -12,5 +12,7 @@ def status():
 
 @index_routes.route('/media/<path:file_path>', methods=['GET'], strict_slashes=False)
 def media(file_path: str):
-    print(file_path)
+    full_path = path.join('api', current_app.config['MEDIA_ROOT'], file_path)
+    if path.isdir(full_path):
+        abort(403)
     return send_from_directory(current_app.config['MEDIA_ROOT'], file_path)

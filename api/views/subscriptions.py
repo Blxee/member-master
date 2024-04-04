@@ -104,9 +104,8 @@ def update_sub(sub_id):
     form_data = {
         key: val
         for key, val in request.form.items()
-        if key in fields and key not in ('id', 'business_id', 'client_id')
+        if key in fields and key not in ('id', 'business_id', 'client_id', 'picture')
     }
-    print(form_data)
 
     if 'assurance' in form_data:
         form_data['assurance'] = form_data['assurance'] == 'on'
@@ -119,6 +118,13 @@ def update_sub(sub_id):
         }), 404
 
     sub = subs[0]
+
+    image_file = request.files.get('picture')
+    if image_file is not None and image_file.filename is not None:
+        # TODO: make logo extention match the uploaded
+        file_path = path.join(sub.get_media_path(), secure_filename(image_file.filename))
+        image_file.save(path.join('api', current_app.config['MEDIA_ROOT'], file_path))
+        sub.picture = path.join('/media', file_path)
 
     sub.__dict__.update(**form_data)
     sub.save()
