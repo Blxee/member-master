@@ -110,6 +110,9 @@ def update_sub(business_id, client_id):
         if key in fields and key not in ('business_id', 'client_id')
     }
 
+    if 'assurance' in form_data:
+        form_data['assurance'] = form_data['assurance'] == 'on'
+
     subs = Subscription.search(business_id=business_id, client_id=client_id)
     if len(subs) == 0:
         return jsonify({
