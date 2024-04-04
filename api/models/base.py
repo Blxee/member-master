@@ -140,6 +140,8 @@ class Base:
     def get_media_path(self) -> str:
         """Returns the media path dir for this user, or creates it."""
         # TODO: improve by caching the media dir from __init__
+        if self.id is None:
+            self.save()
         sub_path = path.join(self.table_name, f'{self.id}/')
         instance_path = Path('api', current_app.config['MEDIA_ROOT'], sub_path)
         instance_path.mkdir(parents=True, exist_ok=True)

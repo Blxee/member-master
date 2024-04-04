@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS membermaster_dev.businesses (
 CREATE TABLE IF NOT EXISTS membermaster_dev.subscriptions (
   id INT NOT NULL AUTO_INCREMENT,
   business_id INT NOT NULL,
-  client_id INT NOT NULL,
+  client_id INT,
   first_name VARCHAR(64),
   last_name VARCHAR(64),
   picture VARCHAR(128),
@@ -38,9 +38,10 @@ CREATE TABLE IF NOT EXISTS membermaster_dev.subscriptions (
   joined DATE,
   last_paid DATE,
   assurance BOOLEAN,
-  PRIMARY KEY(id, business_id, client_id),
+  PRIMARY KEY(id),
   FOREIGN KEY(business_id) REFERENCES membermaster_dev.businesses(id) ON DELETE CASCADE,
   FOREIGN KEY(client_id) REFERENCES membermaster_dev.users(id) ON DELETE CASCADE
 );
+-- PRIMARY KEY(id, business_id, client_id),
 
 GRANT ALL PRIVILEGES ON membermaster_dev.* TO 'mm_user_dev'@'%';

@@ -1,8 +1,10 @@
 """Module defining Subscription class related routes."""
 from flask import Blueprint, abort, current_app, jsonify, request
+from werkzeug.utils import secure_filename
 from api.models.business import Business
 from api.models.subscription import Subscription
 from api.utils import require_auth
+from os import path
 
 
 subscriptions_routes = Blueprint('subscriptions', __name__, url_prefix='/api/subs')
@@ -34,6 +36,9 @@ def add_sub(business_id):
         if key in fields
     }
 
+    if 'assurance' in form_data:
+        form_data['assurance'] = form_data['assurance'] == 'on'
+
     if not fields_required.issubset(set(form_data)):
         return jsonify({
             'status': 'error',
@@ -42,16 +47,15 @@ def add_sub(business_id):
 
     # add client_id too to constructor
     sub = Subscription(**form_data, business_id=business_id)
-    sub.save() # save to create the auto increment ID
 
-    # image_file = request.files.get('logo')
-    # if image_file is not None and image_file.filename is not None:
-    #     # TODO: make logo extention match the uploaded
-    #     file_path = path.join(sub.get_media_path(), secure_filename(image_file.filename))
-    #     image_file.save(path.join('api', current_app.config['MEDIA_ROOT'], file_path))
-    #     sub.logo = path.join('/media', file_path)
-    #
-    # sub.save()
+    image_file = request.files.get('picture')
+    if image_file is not None and image_file.filename is not None:
+        # TODO: make logo extention match the uploaded
+        file_path = path.join(sub.get_media_path(), secure_filename(image_file.filename))
+        image_file.save(path.join('api', current_app.config['MEDIA_ROOT'], file_path))
+        sub.picture = path.join('/media', file_path)
+
+    sub.save()
 
     return jsonify({
         'status': 'success',
