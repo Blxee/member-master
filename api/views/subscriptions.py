@@ -89,35 +89,29 @@ def current_user_subs():
     return jsonify(subs)
 
 
-@subscriptions_routes.route('/update/<int:business_id>:<int:client_id>', methods=['POST'], strict_slashes=False)
+@subscriptions_routes.route('/update/<int:sub_id>', methods=['POST'], strict_slashes=False)
 @require_auth
-def update_sub(business_id, client_id):
+def update_sub(sub_id):
     """Updates a sub using its business_id and client_id."""
-    businesses = Business.search(id=business_id)
-    if len(businesses) == 0:
-        return jsonify({
-            'status': 'error',
-            'message': 'there is no such business',
-        }), 404
 
-    business = businesses[0]
-    if business.owner_id != current_app.auth_user.id:
-        return jsonify({
-            'status': 'error',
-            'message': 'current user does not own this business',
-        }), 404
+    # if business.owner_id != current_app.auth_user.id:
+    #     return jsonify({
+    #         'status': 'error',
+    #         'message': 'current user does not own this business',
+    #     }), 404
 
     fields = set(Subscription.fields)
     form_data = {
         key: val
         for key, val in request.form.items()
-        if key in fields and key not in ('business_id', 'client_id')
+        if key in fields and key not in ('id', 'business_id', 'client_id')
     }
+    print(form_data)
 
     if 'assurance' in form_data:
         form_data['assurance'] = form_data['assurance'] == 'on'
 
-    subs = Subscription.search(business_id=business_id, client_id=client_id)
+    subs = Subscription.search(id=sub_id)
     if len(subs) == 0:
         return jsonify({
             'status': 'error',
@@ -135,13 +129,11 @@ def update_sub(business_id, client_id):
     }), 200
 
 
-@subscriptions_routes.route('/delete/<int:business_id>:<int:client_id>', methods=['DELETE'], strict_slashes=False)
+@subscriptions_routes.route('/delete/<int:sub_id>', methods=['DELETE'], strict_slashes=False)
 @require_auth
-def delete_sub(business_id, client_id):
+def delete_sub(sub_id):
     """Deletes a sub using its business_id and client_id."""
-    user_id = current_app.auth_user.id
-
-    subs = Subscription.search(business_id=business_id, client_id=client_id)
+    subs = Subscription.search(id=sub_id)
 
     if len(subs) == 0:
         return jsonify({

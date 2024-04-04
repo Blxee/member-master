@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../App';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCancel, faCheck, faPen, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCancel, faCheck, faCoins, faPen, faPlus, faTrash, faUser, faX } from '@fortawesome/free-solid-svg-icons';
 
 
 function AddBusinessModal() {
@@ -60,18 +60,17 @@ function AddBusinessModal() {
 }
 
 
-function AddClientModal() {
+function AddClientModal({ businessId }) {
   const { pushAlert } = useContext(UserContext);
 
   const submitForm = (event) => {
     event.preventDefault();
     const data = new FormData(event.target);
 
-    fetch('http://localhost:5000/api/businesses/add', {
+    fetch(`http://localhost:5000/api/subs/add/${businessId}`, {
       method: 'POST',
       mode: 'cors',
       credentials: 'include',
-      // headers: { 'Content-Type': 'application/json' },
       body: data,
     }).then((res) => res.json())
       .then(({ status, message }) => {
@@ -90,21 +89,7 @@ function AddClientModal() {
             <button type='button' className='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
           </div>
           <div className='modal-body'>
-            <form onSubmit={submitForm} id='addClientForm' className="card rounded-4 bg-light shadow container w-100 p-4 mx-auto my-3">
-              <legend>Add New Client:</legend>
-
-              business_id INT NOT NULL,
-              client_id INT NOT NULL AUTO_INCREMENT, --this is only for quick deployment
-              first_name VARCHAR(64),
-              last_name VARCHAR(64),
-              picture VARCHAR(128),
-              email VARCHAR(64),
-              phone VARCHAR(64),
-              documents_dir VARCHAR(128),
-              joined DATE,
-              last_paid DATE,
-              assurance BOOLEAN,
-
+            <form onSubmit={submitForm} id='addClientForm' className="container w-100 p-4 mx-auto my-3">
               <label className="form-label mb-0">Picture:</label>
               <input className="form-control" name='picture' type='file' accept='image/*' />
 
@@ -128,15 +113,15 @@ function AddClientModal() {
               <input className="form-control" name='phone' type='tel' placeholder='Phone' maxLength={64} />
 
               <label className="form-label">Joined At:</label>
-              <input className="form-control" name='joined' type='date' placeholder='Joined' />
-
-              <label className="form-label">Last Paid</label>
-              <input className="form-control" name='last_paid' type='date' placeholder='Last Paid' />
+              <input className="form-control" name='joined' type='date' defaultValue={new Date().toISOString().slice(0, 10)} />
 
               <div className='form-check w-100 d-flex flex-row p-0 my-3'>
                 <label className="form-check-label me-auto">Assurance:</label>
                 <input className="form-check-input border-black ms-auto me-3" name='assurance' type='checkbox' />
               </div>
+
+              <label className="form-label mb-0">Documents:</label>
+              <input className="form-control" name='files[]' type='file' multiple/>
 
             </form>
           </div>
@@ -179,7 +164,28 @@ function UserInfo({ client }) {
     });
 
     if (client != null) {
-      fetch(`http://localhost:5000/api/subs/update/${client.business_id}:${client.client_id}`, {
+      fetch(`http://localhost:5000/api/subs/update/${client.id}`, {
+        method: 'POST',
+        mode: 'cors',
+        credentials: 'include',
+        body: formData,
+      }).then((res) => {
+        res.json().then((res) => {
+          pushAlert(res.message, res.status);
+        });
+      }).catch((err) => pushAlert(err.message));
+    }
+  };
+
+  const payMonth = () => {
+    if (client != null) {
+      const formData = new FormData();
+      let lastPaid = new Date(client.last_paid.getTime());
+      lastPaid.setMonth(lastPaid.getMonth() + 1);
+      lastPaid = lastPaid.toISOString().slice(0, 10);
+      formData.append('last_paid', lastPaid);
+
+      fetch(`http://localhost:5000/api/subs/update/${client.id}`, {
         method: 'POST',
         mode: 'cors',
         credentials: 'include',
@@ -194,7 +200,7 @@ function UserInfo({ client }) {
 
   const deleteClient = () => {
     if (client != null) {
-      fetch(`http://localhost:5000/api/subs/delete/${client.business_id}:${client.client_id}`, {
+      fetch(`http://localhost:5000/api/subs/delete/${client.id}`, {
         method: 'DELETE',
         mode: 'cors',
         credentials: 'include',
@@ -209,21 +215,9 @@ function UserInfo({ client }) {
   return (
     <form ref={formRef} onSubmit={updateClient} className="card rounded-4 bg-light shadow container w-100 p-4 mx-auto my-3">
       <legend>User Profile</legend>
-      {JSON.stringify(client)}
-
-      business_id INT NOT NULL,
-      client_id INT NOT NULL AUTO_INCREMENT, --this is only for quick deployment
-      first_name VARCHAR(64),
-      last_name VARCHAR(64),
-      picture VARCHAR(128),
-      email VARCHAR(64),
-      phone VARCHAR(64),
-      documents_dir VARCHAR(128),
-      joined DATE,
-      last_paid DATE,
-      assurance BOOLEAN,
 
       <fieldset className='container-fluid d-flex flex-column align-items-start gap-3' disabled={!isEditing}>
+        <img src={'http://localhost:5000' + client?.picture} />
         <label className="form-label mb-0">Picture:</label>
         <input className="form-control" name='picture' type='file' accept='image/*' hidden={!isEditing} />
 
@@ -247,10 +241,10 @@ function UserInfo({ client }) {
         <input className="form-control" name='phone' type='tel' placeholder='Phone' defaultValue={client.phone} maxLength={64} />
 
         <label className="form-label">Joined At:</label>
-        <input className="form-control" name='joined' type='date' defaultValue={client.joined.toISOString().slice(0, 10)} placeholder='Joined' />
+        <input className="form-control" name='joined' type='date' defaultValue={client.joined.toISOString().slice(0, 10)} />
 
         <label className="form-label">Last Paid</label>
-        <input className="form-control" name='last_paid' type='date'  defaultValue={client.last_paid.toISOString().slice(0, 10)} placeholder='Last Paid' />
+        <input className="form-control" name='last_paid' type='date'  defaultValue={client.last_paid.toISOString().slice(0, 10)} />
 
         <div className='form-check w-100 d-flex flex-row p-0 my-3'>
           <label className="form-check-label me-auto">Assurance:</label>
@@ -258,6 +252,10 @@ function UserInfo({ client }) {
         </div>
 
       </fieldset>
+
+      <button type='button' onClick={payMonth} className='btn btn-success bg-gradient px-4'>
+        <FontAwesomeIcon icon={faCoins} className='me-4' />Pay Month
+      </button>
 
       <div className='container-fluid d-flex flex-row mt-4 mx-2'>
         <button type='button' className={`btn btn-${isEditing ? 'warning' : 'primary'} d-inline bg-gradient px-4`} onClick={toggleEdit}>
@@ -342,12 +340,16 @@ export default function Dashboard() {
   return (
     <div className='w-100 container-fluid text-center'>
       <AddBusinessModal />
-      <AddClientModal />
+      <AddClientModal businessId={selectedBusiness?.id} />
 
       <div className='row'>
         <div className='col'>
           <div className='dropdown'>
-            <button className='btn btn-lg btn-secondary dropdown-toggle' type='button' data-bs-toggle='dropdown' aria-expanded='false'>{selectedBusiness?.name || 'Select a business'}</button>
+            <img className='rounded-start-4' style={{ aspectRatio: '1/1' }} width='%' src={'http://localhost:5000' + selectedBusiness?.logo} />
+
+            <button className='btn btn-lg rounded-start-0 btn-secondary dropdown-toggle' type='button' data-bs-toggle='dropdown' aria-expanded='false'>
+              {selectedBusiness?.name || 'Select a business'}
+            </button>
 
             <ul className='dropdown-menu'>
               {businesses.map(({ name }, index) => {
@@ -380,24 +382,36 @@ export default function Dashboard() {
       <hr className='border-2 rounded' />
 
       <h3>Clients:</h3>
-      <table className='table table-primary table-striped table-hover rounded-3 overflow-hidden'>
+      <table className='table table-secondary table-striped table-hover rounded-3 overflow-hidden'>
         <thead>
           <tr>
-            <th scope='col'>id</th>
-            <th scope='col'>email</th>
-            <th scope='col'>password</th>
+            <th scope='col' style={{width: '1%'}}></th>
+            <th scope='col'>Full Name</th>
+            <th scope='col'>Registration</th>
+            <th scope='col'>Email</th>
+            <th scope='col'>Phone</th>
+            <th scope='col'>Assurance</th>
           </tr>
         </thead>
         <tbody>
           {clients.map((client) => {
             return (
               <>
-                <tr key={client.id} role='button' onClick={centerElement} data-bs-toggle='collapse' data-bs-target={`#tableCollapse${client.id}`}>
-                  <td scope='row'>{client.id}</td>
-                  <td>{client.email}</td>
-                  <td>{client.password}</td>
+                <tr style={{verticalAlign: 'middle'}} key={client.id} role='button' onClick={centerElement} data-bs-toggle='collapse' data-bs-target={`#tableCollapse${client.id}`}>
+                  <td scope='row'>{ client.picture
+                    ? <img className='rounded-3' style={{width: '3em'}} src={'http://localhost:5000' + client.picture} />
+                    : <FontAwesomeIcon icon={faUser} size='3x' />
+                  }</td>
+                  <td>{`${client.first_name} ${client.last_name}`}</td>
+                  <td>{client.joined.toDateString()}</td>
+                  <td>{client.email || <span className='text-danger'>N/A</span>}</td>
+                  <td>{client.phone || <span className='text-danger'>N/A</span>}</td>
+                  <td>{client.assurance
+                    ? <FontAwesomeIcon size='xl' color='#7DCE13' icon={faCheck} />
+                    : <FontAwesomeIcon size='xl' color='#B80000' icon={faX} />
+                  }</td>
                 </tr>
-                <td colSpan='100%' className='collapse' id={`tableCollapse${client.id}`} key={-client.id}>
+                <td colSpan='100%' className='collapse bg-secondary' id={`tableCollapse${client.id}`} key={-client.id}>
                   <UserInfo client={client} />
                 </td>
               </>
