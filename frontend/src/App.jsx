@@ -40,12 +40,12 @@ export const UserContext = createContext();
 function App() {
   const [user, setUser] = useState(null);
   const [alert, setAlert] = useState(null);
-  const [alertVisible, setAlertVisible] = useState(true);
 
   const pushAlert = (content, type) => {
-    setAlertVisible(true);
-    setTimeout(() => setAlertVisible(false), 4000);
-    setAlert(<Alert type={type} show={alertVisible}>{content}</Alert>);
+    setTimeout(() => {
+      setAlert(null);
+    }, 4000);
+    setAlert(<Alert type={type}>{content}</Alert>);
   };
 
   useEffect((user) => {
