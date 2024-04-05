@@ -40,7 +40,7 @@ function AddBusinessModal() {
               <input className="form-control" name='name' type='text' placeholder='Name' maxLength={128} required />
 
               <label className="form-label mb-0">Description:</label>
-              <input className="form-control" name='description' type='text' placeholder='Description' maxLength={256} required />
+              <input className="form-control" name='description' type='text' placeholder='Description' maxLength={256} />
 
               <label className="form-label mb-0">Logo:</label>
               <input className="form-control" name='logo' type='file' accept='image/*' />
@@ -235,8 +235,8 @@ function UserInfo({ client }) {
               <input className='form-control' type='text' defaultValue={client?.picture || 'N/A'} maxLength={128} disabled />
               <input className="form-control" name='picture' type='file' accept='image/*' hidden={!isEditing} />
             </div>
-            { client?.picture
-              ? <img className='rounded-4' style={{width: '10em', aspectRatio: '1/1'}}  src={'http://localhost:5000' + client.picture} />
+            {client?.picture
+              ? <img className='rounded-4' style={{ width: '10em', aspectRatio: '1/1' }} src={'http://localhost:5000' + client.picture} />
               : <FontAwesomeIcon icon={faUser} size='10x' />
             }
           </div>
@@ -274,7 +274,7 @@ function UserInfo({ client }) {
           <input className="form-control" name='joined' type='date' defaultValue={client.joined.toISOString().slice(0, 10)} />
 
           <label className="form-label">Last Paid</label>
-          <input className="form-control" name='last_paid' type='date'  defaultValue={client.last_paid.toISOString().slice(0, 10)} />
+          <input className="form-control" name='last_paid' type='date' defaultValue={client.last_paid.toISOString().slice(0, 10)} />
 
           <div className='w-100 d-flex flex-row justify-content-between'>
             <label className="form-label">Payment:</label>
@@ -297,7 +297,7 @@ function UserInfo({ client }) {
           {isEditing ? 'Cancel' : 'Edit'}
         </button>
 
-        { isEditing &&
+        {isEditing &&
           <button type='submit' className='btn btn-success d-inline bg-gradient px-4 ms-2'>
             <FontAwesomeIcon icon={faCheck} className='me-4' />Save
           </button>
@@ -314,6 +314,7 @@ function UserInfo({ client }) {
 
 
 export default function Dashboard() {
+  const { pushAlert } = useContext(UserContext);
   const [businesses, setBusinesses] = useState([]);
   const [selectedBusiness, setSelectedBusiness] = useState(null);
   const [clients, setClients] = useState([]);
@@ -331,14 +332,8 @@ export default function Dashboard() {
         credentials: 'include',
       }).then((res) => {
         if (res.ok) {
-          res.json().then((business) => {
-
-            setBusinesses(business);
-
-            setSelectedBusiness((selected) => {
-              if (selected == null && business.length > 0)
-                return business[0];
-            });
+          res.json().then((businesses) => {
+            setBusinesses(businesses);
           });
         }
       });
@@ -346,6 +341,10 @@ export default function Dashboard() {
   }, [user]);
 
   useEffect(() => {
+    if (selectedBusiness == null) {
+      setClients([]);
+      return;
+    }
     fetch(`http://localhost:5000/api/subs/business/${selectedBusiness?.id}`, {
       method: 'GET',
       mode: 'cors',
@@ -377,19 +376,34 @@ export default function Dashboard() {
     event.target.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  const deleteBusiness = () => {
+    fetch(`http://localhost:5000/api/businesses/${selectedBusiness?.id}/delete`, {
+      method: 'DELETE',
+      mode: 'cors',
+      credentials: 'include',
+    }).then((res) => {
+      if (res.ok) {
+        setSelectedBusiness(null);
+      }
+      res.json().then((res) => {
+        pushAlert(res.message, res.status);
+      });
+    }).catch((err) => pushAlert(err.message));
+  };
+
   return (
     <div className='container-fluid p-3'>
       <AddBusinessModal />
       <AddClientModal businessId={selectedBusiness?.id} />
 
-      <div className='container-fluid d-flex align-items-start'>
-        <div className='dropdown me-auto'>
-          { selectedBusiness?.logo
+      <div className='container-fluid d-flex flex-row align-items-start'>
+        <div className='dropdown d-flex flex-row me-auto'>
+          {selectedBusiness?.logo
             ? <img className='rounded-start-4 fs-5' style={{ aspectRatio: '1/1', height: '5em' }} width='%' src={'http://localhost:5000' + selectedBusiness?.logo} />
-            : <span className='bg-success' style={{height: '5em'}}><FontAwesomeIcon icon={faImage} size='5x' /></span>
+            : <div className='bg-success d-inline-block rounded-start-4 fs-5 px-2' style={{ height: '5em' }}><FontAwesomeIcon icon={faImage} size='5x' /></div>
           }
 
-          <button style={{height: '5em'}} className='btn btn-success bg-gradient rounded-start-0 fs-5 rounded-end-4 btn-secondary dropdown-toggle' type='button' data-bs-toggle='dropdown' aria-expanded='false'>
+          <button style={{ height: '5em' }} className='btn btn-success bg-gradient rounded-start-0 fs-5 rounded-end-4 btn-secondary dropdown-toggle' type='button' data-bs-toggle='dropdown' aria-expanded='false'>
             {selectedBusiness?.name || 'Select a business'}
           </button>
 
@@ -400,77 +414,98 @@ export default function Dashboard() {
           </ul>
         </div>
 
-        <button
-          type='button'
-          className='btn btn-primary rounded-4 bg-gradient fs-5 ms-auto'
-          data-bs-toggle='modal'
-          data-bs-target='#addBusinessModal'
-        >
-          <FontAwesomeIcon icon={faPlus} color='white' /> Create New Business
-        </button>
+        <div className='d-flex flex-column gap-2 align-items-stretch ms-auto'>
+          <button
+            type='button'
+            className='btn btn-primary rounded-3 bg-gradient fs-5'
+            data-bs-toggle='modal'
+            data-bs-target='#addBusinessModal'
+          >
+            <FontAwesomeIcon icon={faPlus} color='white' /> Create New Business
+          </button>
+
+          {selectedBusiness &&
+            <button
+              type='button'
+              className='btn btn-danger rounded-3 bg-gradient fs-5'
+              onClick={deleteBusiness}
+            >
+              <FontAwesomeIcon icon={faTrash} color='white' /> Delete Business
+            </button>
+          }
+        </div>
       </div>
 
-      <h3 className='mt-5'>Description:</h3>
-      <div className='container fs-5'>{selectedBusiness?.description}</div>
 
-      <hr className='border-2 rounded mt-5' />
+      {selectedBusiness ?
+        <>
+          <h3 className='mt-5'>Description:</h3>
+          <div className='container fs-5'>{selectedBusiness?.description}</div>
 
-      <h3 className='mt-5'>Clients:</h3>
-      <table className='table table-secondary table-striped table-hover rounded-3 overflow-hidden'>
-        <thead>
-          <tr>
-            <th scope='col' style={{width: '1%'}}></th>
-            <th scope='col'>Full Name</th>
-            <th scope='col'>Registration</th>
-            <th scope='col'>Payment</th>
-            <th scope='col'>Email</th>
-            <th scope='col'>Phone</th>
-            <th scope='col' className='text-center'>Assurance</th>
-          </tr>
-        </thead>
-        <tbody>
-          {clients.map((client) => {
-            return (
-              <>
-                <tr style={{verticalAlign: 'middle'}} key={client.id} role='button' onClick={centerElement} data-bs-toggle='collapse' data-bs-target={`#tableCollapse${client.id}`}>
-                  <td scope='row'>{ client.picture
-                    ? <img className='rounded-3' style={{width: '3em', aspectRatio: '1/1'}} src={'http://localhost:5000' + client.picture} />
-                    : <FontAwesomeIcon icon={faUser} size='3x' />
-                  }</td>
-                  <td>{`${client.first_name} ${client.last_name}`}</td>
-                  <td>{client.joined.toDateString()}</td>
-                  <td>
-                    {client.payment < 0
-                      ? <FontAwesomeIcon className='me-2' size='xl' color='#CF0000' icon={faAngleDown} />
-                      : <FontAwesomeIcon className='me-2' size='xl' color='#7DCE13' icon={client.payment == 0 ? faCheck : faAngleUp} />}
-                    {client.payment == 0 ? '' : Math.abs(client.payment)}
-                  </td>
-                  <td>{client.email || <span className='text-danger'>N/A</span>}</td>
-                  <td>{client.phone || <span className='text-danger'>N/A</span>}</td>
-                  <td className='text-center'>{client.assurance
-                    ? <FontAwesomeIcon size='xl' color='#7DCE13' icon={faCheck} />
-                    : <FontAwesomeIcon size='xl' color='#B80000' icon={faX} />
-                  }</td>
-                </tr>
-                <td colSpan='100%' className='collapse bg-secondary' id={`tableCollapse${client.id}`} key={-client.id}>
-                  <UserInfo client={client} />
-                </td>
-              </>
-            )
-          })}
-        </tbody>
-      </table>
+          <hr className='border-2 rounded mt-5' />
 
-      <button
-        type='button'
-        style={{ aspectRatio: '1/1' }}
-        className='btn btn-primary rounded-circle m-3 position-fixed bottom-0 end-0'
-        data-bs-toggle='modal'
-        data-bs-target='#addClientModal'
-      >
-        <FontAwesomeIcon
-          icon={faPlus} size='2x' color='white' />
-      </button>
+          <h3 className='mt-5'>Clients:</h3>
+          <table className='table table-secondary table-striped table-hover rounded-3 overflow-hidden'>
+            <thead>
+              <tr>
+                <th scope='col' style={{ width: '1%' }}></th>
+                <th scope='col'>Full Name</th>
+                <th scope='col'>Registration</th>
+                <th scope='col'>Payment</th>
+                <th scope='col'>Email</th>
+                <th scope='col'>Phone</th>
+                <th scope='col' className='text-center'>Assurance</th>
+              </tr>
+            </thead>
+            <tbody>
+              {clients.map((client) => {
+                return (
+                  <>
+                    <tr style={{ verticalAlign: 'middle' }} key={client.id} role='button' onClick={centerElement} data-bs-toggle='collapse' data-bs-target={`#tableCollapse${client.id}`}>
+                      <td scope='row'>{client.picture
+                        ? <img className='rounded-3' style={{ width: '3em', aspectRatio: '1/1' }} src={'http://localhost:5000' + client.picture} />
+                        : <FontAwesomeIcon icon={faUser} size='3x' />
+                      }</td>
+                      <td>{`${client.first_name} ${client.last_name}`}</td>
+                      <td>{client.joined.toDateString()}</td>
+                      <td>
+                        {client.payment < 0
+                          ? <FontAwesomeIcon className='me-2' size='xl' color='#CF0000' icon={faAngleDown} />
+                          : <FontAwesomeIcon className='me-2' size='xl' color='#7DCE13' icon={client.payment == 0 ? faCheck : faAngleUp} />}
+                        {client.payment == 0 ? '' : Math.abs(client.payment)}
+                      </td>
+                      <td>{client.email || <span className='text-danger'>N/A</span>}</td>
+                      <td>{client.phone || <span className='text-danger'>N/A</span>}</td>
+                      <td className='text-center'>{client.assurance
+                        ? <FontAwesomeIcon size='xl' color='#7DCE13' icon={faCheck} />
+                        : <FontAwesomeIcon size='xl' color='#B80000' icon={faX} />
+                      }</td>
+                    </tr>
+                    <td colSpan='100%' className='collapse bg-secondary' id={`tableCollapse${client.id}`} key={-client.id}>
+                      <UserInfo client={client} />
+                    </td>
+                  </>
+                )
+              })}
+            </tbody>
+          </table>
+        </>
+        :
+        <h1 style={{ marginTop: '15%' }} className='text-center text-secondary'>Please select a business to see its data!</h1>
+      }
+
+      {selectedBusiness &&
+        <button
+          type='button'
+          style={{ aspectRatio: '1/1' }}
+          className='btn btn-primary rounded-circle m-3 position-fixed bottom-0 end-0'
+          data-bs-toggle='modal'
+          data-bs-target='#addClientModal'
+        >
+          <FontAwesomeIcon
+            icon={faPlus} size='2x' color='white' />
+        </button>
+      }
 
     </div>
   )

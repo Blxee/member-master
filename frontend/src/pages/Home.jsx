@@ -64,7 +64,8 @@ function Feature1() {
           <h1 className='mx-auto'>MemberMaster</h1>
 
           <p>
-            Seamlessly manage memberships and track client accounts hassle-free.
+            Say goodbye to searching throught piles of papers for a document.<br/>
+            Spend your time on what really matters.
           </p>
 
           <hr/>

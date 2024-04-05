@@ -1,6 +1,6 @@
 """Module defining Business class related routes."""
 from os import path
-from flask import Blueprint, current_app, jsonify, request
+from flask import Blueprint, abort, current_app, jsonify, request
 from werkzeug.utils import secure_filename
 from api.models.business import Business
 from api.utils import require_auth
@@ -82,4 +82,25 @@ def add_business():
     return jsonify({
         'status': 'success',
         'message': 'a new bussiness has been successfully added',
+    }), 200
+
+
+@businesses_routes.route('/<int:business_id>/delete', methods=['DELETE'], strict_slashes=False)
+@require_auth
+def delete_business(business_id):
+    """Deletes a Business from the database using it's ID."""
+    result = Business.search(id=business_id)
+    if len(result) == 0:
+        return jsonify({
+            'status': 'error',
+            'message': 'there is no such business',
+        }), 404
+
+    business = result[0]
+
+    business.delete()
+
+    return jsonify({
+        'status': 'success',
+        'message': 'business deleted successfully',
     }), 200
