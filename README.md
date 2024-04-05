@@ -57,6 +57,30 @@ docker run -d my-image
 
 **puppet -p deploy.pp**
 
+## Back-end Routes:
+
+| Route                                        | Method     | description |
+| :------------------------------------------- | :--------: | :---------- |
+| `/api/businesses/all`                        | **GET**    | retrieves all businesses
+| `/api/businesses/<business_id>`              | **GET**    | retrieves one business by ID
+| `/api/businesses/<business_id>/clients/all`  | **GET**    | retrieves all clients subscribed to a business
+| `/api/businesses/add`                        | **POST**   | creates a new business
+| `/api/businesses/<int:business_id>/delete`   | **DELETE** | deletes a business
+| `/api/status`                                | **GET**    | returns the status of the API
+| `/media/<path:file_path>`                    | **GET**    | downloads a file from the media directory
+| `/api/subs/add/<int:business_id>`            | **POST**   | creates a new subscription connected to a business
+| `/api/subs/business/<int:business_id>`       | **GET**    | retrieves all subscriptions of a business
+| `/api/subs/user/<int:user_id>`               | **GET**    | retrieves all subscription of a specific client
+| `/api/subs/current`                          | **GET**    | retrieves all subscription of the current authenticated user
+| `/api/subs/update/<int:sub_id>`              | **POST**   | updates a subscription using its id
+| `/api/subs/delete/<int:sub_id>`              | **DELETE** | deletes a business
+| `/api/users/sign-up`                         | **POST**   | creates a new user
+| `/api/users/sign-in`                         | **GET**    | authenticates a user using email and password
+| `/api/users/sign-out`                        | **GET**    | deletes the authenticated user token
+| `/api/users/<user_id>`                       | **GET**    | retrieves a user using his ID
+| `/api/users/current`                         | **GET**    | retrieves the current authenticated user
+| `/api/users/<user_id>/businesses`            | **GET**    | retrieves all businesses owned by a user
+
 ## Contribute:
 
 **MemberMaster** is open for contibution, your efforts will help us deliver freatures quickly and fix bugs.
