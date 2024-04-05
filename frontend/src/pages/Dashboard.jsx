@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../App';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleDown, faAngleUp, faCancel, faCheck, faCoins, faImage, faPen, faPlus, faTrash, faUser, faX } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDown, faAngleUp, faCancel, faCheck, faCoins, faEnvelope, faImage, faPen, faPlus, faTrash, faUser, faX } from '@fortawesome/free-solid-svg-icons';
 
 
 function AddBusinessModal() {
@@ -187,11 +187,12 @@ function UserInfo({ client }) {
     }
   };
 
-  const payMonth = () => {
+  const setPayment = (months) => {
     if (client != null) {
       const formData = new FormData();
       let lastPaid = new Date(client.last_paid.getTime());
-      lastPaid.setMonth(lastPaid.getMonth() + 1);
+      lastPaid.setMonth(lastPaid.getMonth() + months);
+      client.last_paid = lastPaid;
       lastPaid = lastPaid.toISOString().slice(0, 10);
       formData.append('last_paid', lastPaid);
 
@@ -226,8 +227,8 @@ function UserInfo({ client }) {
     <form ref={formRef} onSubmit={updateClient} className="card rounded-4 bg-light shadow container w-100 p-4 mx-auto my-3">
       <legend>{`${client?.first_name || 'User'}'s Profile`}</legend>
 
-      <fieldset className='container-fluid d-flex flex-row align-items-stretch' disabled={!isEditing}>
-        <div className='container-fluid d-flex flex-column justify-content-between align-items-start gap-3'>
+      <div className='container-fluid d-flex flex-row align-items-stretch'>
+        <fieldset className='container-fluid d-flex flex-column justify-content-between align-items-start gap-3' disabled={!isEditing}>
 
           <div className='w-100 d-flex flex-row justify-content-between align-items-stretch p-0 my-3'>
             <div className='d-flex flex-column justify-content-evenly w-50'>
@@ -260,48 +261,58 @@ function UserInfo({ client }) {
           <label className="form-label">Phone Number:</label>
           <input className="form-control" name='phone' type='tel' placeholder='Phone' defaultValue={client?.phone} maxLength={64} />
 
-        </div>
+        </fieldset>
 
         <div className='vr mx-3' />
         <div className='container-fluid d-flex flex-column justify-content-between align-items-start gap-3'>
 
           <div className='form-check w-100 d-flex flex-row p-0 my-3'>
             <label className="form-check-label me-auto">Assurance:</label>
-            <input className="form-check-input border-black ms-auto me-3" name='assurance' type='checkbox' defaultChecked={client?.assurance} />
+            <input className="form-check-input border-black ms-auto me-3" name='assurance' type='checkbox' defaultChecked={client?.assurance} disabled={!isEditing} />
           </div>
 
           <label className="form-label">Joined At:</label>
-          <input className="form-control" name='joined' type='date' defaultValue={client.joined.toISOString().slice(0, 10)} />
+          <input className="form-control" name='joined' type='date' defaultValue={client.joined.toISOString().slice(0, 10)}  disabled={!isEditing} />
 
           <label className="form-label">Last Paid</label>
-          <input className="form-control" name='last_paid' type='date' defaultValue={client.last_paid.toISOString().slice(0, 10)} />
+          <input className="form-control" name='last_paid' type='date' defaultValue={client.last_paid.toISOString().slice(0, 10)}  disabled={!isEditing} />
 
           <div className='w-100 d-flex flex-row justify-content-between'>
-            <label className="form-label">Payment:</label>
+            <label className="form-label me-auto">Payment:</label>
             {client.payment < 0
               ? <FontAwesomeIcon className='me-2' size='xl' color='#CF0000' icon={faAngleDown} />
               : <FontAwesomeIcon className='me-2' size='xl' color='#7DCE13' icon={client.payment == 0 ? faCheck : faAngleUp} />}
             {client.payment == 0 ? '' : Math.abs(client.payment)}
           </div>
 
-          <button type='button' onClick={payMonth} className='btn btn-success w-100 bg-gradient px-4'>
-            <FontAwesomeIcon icon={faCoins} className='me-4' />Pay Month
-          </button>
+          <div className='d-flex flex-row w-100 gap-1'>
+            <button type='button' onClick={() => setPayment(1)} className='btn btn-success w-50 bg-gradient px-4'>
+              <FontAwesomeIcon icon={faCoins} className='me-4' />Pay Month
+            </button>
+
+            <button type='button' onClick={() => setPayment(-1)} className='btn btn-warning w-50 bg-gradient px-4'>
+              <FontAwesomeIcon icon={faCoins} className='me-4' />Unpay Month
+            </button>
+          </div>
 
         </div>
-      </fieldset>
+      </div>
 
-      <div className='container-fluid d-flex flex-row mt-4 mx-2'>
+      <div className='container-fluid d-flex flex-row gap-3 mt-4 mx-2'>
         <button type='button' className={`btn btn-${isEditing ? 'warning' : 'primary'} d-inline bg-gradient px-4`} onClick={toggleEdit}>
           <FontAwesomeIcon icon={isEditing ? faCancel : faPen} className='me-4' />
           {isEditing ? 'Cancel' : 'Edit'}
         </button>
 
         {isEditing &&
-          <button type='submit' className='btn btn-success d-inline bg-gradient px-4 ms-2'>
+          <button type='submit' className='btn btn-success d-inline bg-gradient px-4'>
             <FontAwesomeIcon icon={faCheck} className='me-4' />Save
           </button>
         }
+
+        <button type='button' className='btn btn-secondary d-inline bg-gradient px-4'>
+          <FontAwesomeIcon icon={faEnvelope} className='me-4' />Message
+        </button>
 
         <button type='button' onClick={deleteClient} className='btn btn-danger d-inline bg-gradient px-4 ms-auto'>
           <FontAwesomeIcon icon={faTrash} className='me-4' />Delete
@@ -392,7 +403,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className='container-fluid p-3'>
+    <div className='container-fluid p-3 d-flex flex-column gap-4'>
       <AddBusinessModal />
       <AddClientModal businessId={selectedBusiness?.id} />
 
@@ -439,12 +450,23 @@ export default function Dashboard() {
 
       {selectedBusiness ?
         <>
-          <h3 className='mt-5'>Description:</h3>
+          <h3>Description:</h3>
           <div className='container fs-5'>{selectedBusiness?.description}</div>
 
-          <hr className='border-2 rounded mt-5' />
+          <hr className='border-2 rounded' />
 
-          <h3 className='mt-5'>Clients:</h3>
+          <div className='container-flui d-flex flex-row justify-content-between'>
+            <form className='d-flex'>
+              <input className='form-control me-2' type='search' placeholder='Search Clients' aria-label='Search' />
+              <button className='btn btn-outline-success' type='submit'>Search</button>
+            </form>
+
+            <button className='btn btn-lg btn-secondary'>
+              <FontAwesomeIcon className='me-3' icon={faEnvelope} />Send Global Message
+            </button>
+          </div>
+
+          <h3>Clients:</h3>
           <table className='table table-secondary table-striped table-hover rounded-3 overflow-hidden'>
             <thead>
               <tr>
